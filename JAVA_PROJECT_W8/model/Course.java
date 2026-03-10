@@ -8,7 +8,7 @@ public class Course {
     private String department;
     private boolean isAvailable;
 
-    public Course(String courseId, String title, String code, 
+    public Course(String courseId, String title, String code,
                   int credits, String department, boolean isAvailable) {
         setCourseId(courseId);
         setTitle(title);
@@ -18,15 +18,13 @@ public class Course {
         setAvailable(isAvailable);
     }
 
-    // Getters
-    public String getCourseId() { return courseId; }
-    public String getTitle() { return title; }
-    public String getCode() { return code; }
-    public int getCredits() { return credits; }
+    public String getCourseId()   { return courseId; }
+    public String getTitle()      { return title; }
+    public String getCode()       { return code; }
+    public int getCredits()       { return credits; }
     public String getDepartment() { return department; }
-    public boolean isAvailable() { return isAvailable; }
+    public boolean isAvailable()  { return isAvailable; }
 
-    // Setters
     public void setCourseId(String courseId) {
         this.courseId = isBlank(courseId) ? "UNKNOWN" : courseId.trim();
     }
@@ -59,8 +57,7 @@ public class Course {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Course course = (Course) obj;
-        return courseId.equals(course.courseId);
+        return courseId.equals(((Course) obj).courseId);
     }
 
     @Override

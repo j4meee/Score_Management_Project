@@ -1,9 +1,10 @@
 package model;
+
 import user.IPerson;
 import user.Student;
 
 public class Enrollment {
-    
+
     private String enrollmentId;
     private Student student;
     private Course course;
@@ -13,7 +14,7 @@ public class Enrollment {
     private int year;
 
     public Enrollment(String enrollmentId, Student student, Course course,
-                        String semester, int year, IPerson enrolledBy) {
+                      String semester, int year, IPerson enrolledBy) {
         setEnrollmentId(enrollmentId);
         setStudent(student);
         setCourse(course);
@@ -23,47 +24,32 @@ public class Enrollment {
         this.score = 0.0;
     }
 
-    // ===== Getters =====
     public String getEnrollmentId() { return enrollmentId; }
-    public Student getStudent() { return student; }
-    public Course getCourse() { return course; }
-    public double getScore() { return score; }
-    public IPerson getEnrolledBy() { return enrolledBy; }
-    public String getSemester() { return semester; }
-    public int getYear() { return year; }
+    public Student getStudent()     { return student; }
+    public Course getCourse()       { return course; }
+    public double getScore()        { return score; }
+    public IPerson getEnrolledBy()  { return enrolledBy; }
+    public String getSemester()     { return semester; }
+    public int getYear()            { return year; }
 
-    // ===== Setters =====
     public void setEnrollmentId(String enrollmentId) {
-        if (isBlank(enrollmentId)) this.enrollmentId = "UNKNOWN";
-        else this.enrollmentId = enrollmentId.trim();
+        this.enrollmentId = isBlank(enrollmentId) ? "UNKNOWN" : enrollmentId.trim();
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
+    public void setStudent(Student student)  { this.student    = student; }
+    public void setCourse(Course course)     { this.course     = course; }
+    public void setEnrolledBy(IPerson e)     { this.enrolledBy = e; }
 
     public void setSemester(String semester) {
-        if (isBlank(semester)) this.semester = "Fall";
-        else this.semester = semester.trim();
+        this.semester = isBlank(semester) ? "Fall" : semester.trim();
     }
 
     public void setYear(int year) {
-        if (year < 2000 || year > 2100) this.year = 2024;
-        else this.year = year;
-    }
-
-    public void setEnrolledBy(IPerson enrolledBy) {
-        this.enrolledBy = enrolledBy;
+        this.year = (year < 2000 || year > 2100) ? 2024 : year;
     }
 
     public void setScore(double score) {
-        if (score >= 0 && score <= 100) {
-            this.score = score;
-        }
+        if (score >= 0 && score <= 100) this.score = score;
     }
 
     private boolean isBlank(String s) {
@@ -82,19 +68,14 @@ public class Enrollment {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        
-        Enrollment enrollment = (Enrollment) obj;
-        
-        if (!enrollmentId.equals(enrollment.enrollmentId)) return false;
-        
-        return true;
+        return enrollmentId.equals(((Enrollment) obj).enrollmentId);
     }
 
     @Override
     public String toString() {
-        String studentName = (student == null) ? "UNKNOWN" : student.getFullName();
-        String courseCode = (course == null) ? "UNKNOWN" : course.getCode();
-        String enrolledByName = (enrolledBy == null) ? "System" : enrolledBy.getFullName();
+        String studentName    = (student    == null) ? "UNKNOWN" : student.getFullName();
+        String courseCode     = (course     == null) ? "UNKNOWN" : course.getCode();
+        String enrolledByName = (enrolledBy == null) ? "System"  : enrolledBy.getFullName();
 
         return enrollmentId + ": " + studentName + " enrolled in " + courseCode +
                " (" + semester + " " + year + ") Score: " + score + " (" + getLetterGrade() + ")" +

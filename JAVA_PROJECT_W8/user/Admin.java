@@ -1,26 +1,26 @@
 package user;
 
+// Admin OVERRIDES can() — returns true for everything.
+// Variable type may be Person, but runtime type is Admin.
+// Java calls Admin.can() at runtime — dynamic dispatch.
 public class Admin extends Person {
-    
-    // CHANGED: Now takes a Person object instead of individual parameters
+
     public Admin(Person person) {
         super(person.getId(), person.getFullName(), person.getUsername(), person.getPassword());
     }
 
     @Override
     public boolean can(String action) {
-        // Admin can do everything
-        return true;
+        return true; // Admin can do everything
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!super.equals(obj)) return false;
-        return true;
+        return super.equals(obj);
     }
 
     @Override
     public String toString() {
-    return super.toString() + "}";
+        return super.toString() + "}";
     }
 }
