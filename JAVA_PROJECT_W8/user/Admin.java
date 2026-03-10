@@ -1,8 +1,10 @@
 package user;
+
 public class Admin extends Person {
     
-    public Admin(String adminId, String fullName, String username, String password) {
-        super(adminId, fullName, username, password, "Admin");
+    // CHANGED: Now takes a Person object instead of individual parameters
+    public Admin(Person person) {
+        super(person.getId(), person.getFullName(), person.getUsername(), person.getPassword());
     }
 
     @Override
@@ -14,7 +16,7 @@ public class Admin extends Person {
     @Override
     public boolean equals(Object obj) {
         if (!super.equals(obj)) return false;
-        return true; // No additional fields to compare
+        return true;
     }
 
     @Override
@@ -23,7 +25,6 @@ public class Admin extends Person {
                 "id='" + getId() + '\'' +
                 ", fullName='" + getFullName() + '\'' +
                 ", username='" + getUsername() + '\'' +
-                ", role='" + getRole() + '\'' +
                 '}';
     }
 }

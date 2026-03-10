@@ -1,19 +1,18 @@
 package user;
-public abstract class Person implements IPerson {
+
+public class Person implements IPerson {
     
     private String id;
     private String fullName;
     private String username;
     private String password;
-    private String role;
     private boolean active;
 
-    public Person(String id, String fullName, String username, String password, String role) {
+    public Person(String id, String fullName, String username, String password) {
         setId(id);
         setFullName(fullName);
-        setUsername(username);
         setPassword(password);
-        setRole(role);
+        setUsername(username);
         this.active = true;
     }
 
@@ -27,10 +26,9 @@ public abstract class Person implements IPerson {
     @Override
     public String getPassword() { return password; }
     @Override
-    public String getRole() { return role; }
     public boolean isActive() { return active; }
 
-    // ===== Setters with validation =====
+    // ===== Setters =====
     public void setId(String id) {
         if (isBlank(id)) this.id = "UNKNOWN";
         else this.id = id.trim();
@@ -42,8 +40,12 @@ public abstract class Person implements IPerson {
     }
 
     public void setUsername(String username) {
-        if (isBlank(username)) this.username = "user_" + this.id;
-        else this.username = username.trim();
+        if (isBlank(username)) {
+            String baseId = (this.id == null || this.id.equals("UNKNOWN")) ? "user" : this.id;
+            this.username = "user_" + baseId;
+        } else {
+            this.username = username.trim();
+        }
     }
 
     public void setPassword(String password) {
@@ -52,16 +54,12 @@ public abstract class Person implements IPerson {
         else this.password = pw;
     }
 
-    public void setRole(String role) {
-        if (isBlank(role)) this.role = "Unknown";
-        else this.role = role.trim();
-    }
-
     public void setActive(boolean active) {
         this.active = active;
     }
 
     // ===== Helper methods =====
+    @Override
     public boolean checkPassword(String input) {
         return password != null && password.equals(input);
     }
@@ -70,7 +68,11 @@ public abstract class Person implements IPerson {
         return s == null || s.trim().isEmpty();
     }
 
-    // ===== equals =====
+    @Override
+    public boolean can(String action) {
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -87,10 +89,9 @@ public abstract class Person implements IPerson {
     @Override
     public String toString() {
         return "Person{" +
-                "id='" + id + '\'' +
+                // "id='" + id + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", username='" + username + '\'' +
-                ", role='" + role + '\'' +
                 ", active=" + active +
                 '}';
     }

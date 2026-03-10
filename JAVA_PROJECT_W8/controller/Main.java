@@ -1,4 +1,5 @@
 package controller;
+
 import java.util.Scanner;
 
 import user.Person;
@@ -24,7 +25,7 @@ public class Main {
                         handleLogin();
                         break;
                     case 2:
-                        school.viewCourses();
+                        school.printCourses();
                         break;
                     case 0:
                         System.out.println("Goodbye!");
@@ -37,8 +38,12 @@ public class Main {
                 choice = getIntInput("Choose: ");
                 
                 switch (choice) {
-                    case 1: showManagementMenu(); break;
-                    case 2: showViewMenu(); break;
+                    case 1: 
+                        showManagementMenu(); 
+                        break;
+                    case 2: 
+                        showViewMenu(); 
+                        break;
                     case 3: 
                         handleLogout();
                         break;
@@ -70,10 +75,15 @@ public class Main {
     
     private static void showMainLoggedInMenu() {
         Person user = school.getLoggedInUser();
+        if (user == null) {
+            System.out.println("Error: Not logged in.");
+            return;
+        }
+        
         System.out.println("\n+----------------------------------------+");
         System.out.println("|         CADT UNIVERSITY SYSTEM        |");
         System.out.println("+----------------------------------------+");
-        System.out.println("| Logged In: " + padRight(user.getRole() + " - " + user.getFullName(), 30) + " |");
+        System.out.println("| Logged In: " + padRight(user.getClass().getSimpleName() + " - " + user.getFullName(), 30) + " |");
         System.out.println("+----------------------------------------+");
         System.out.println("|              MAIN MENU                 |");
         System.out.println("+----------------------------------------+");
@@ -97,38 +107,47 @@ public class Main {
     
     private static boolean hasAnyManagementPermission() {
         Person user = school.getLoggedInUser();
+        if (user == null) return false;
         
         // Check if user can do any management actions
-            return user.can(School.CREATE_TEACHER) ||
-                user.can(School.DELETE_TEACHER) ||
-                user.can(School.CREATE_STUDENT) ||
-                user.can(School.DELETE_STUDENT) ||
-                user.can(School.CREATE_COURSE) ||
-                user.can(School.UPDATE_COURSE) ||
-                user.can(School.DELETE_COURSE) ||
-                user.can(School.SET_COURSE_AVAILABILITY) ||
-                user.can(School.CREATE_ENROLLMENT) ||
-                user.can(School.GRADE_STUDENT);
+        return user.can(School.CREATE_TEACHER) ||
+               user.can(School.DELETE_TEACHER) ||
+               user.can(School.CREATE_STUDENT) ||
+               user.can(School.DELETE_STUDENT) ||
+               user.can(School.CREATE_COURSE) ||
+               user.can(School.UPDATE_COURSE) ||
+               user.can(School.DELETE_COURSE) ||
+               user.can(School.SET_COURSE_AVAILABILITY) ||
+               user.can(School.CREATE_ENROLLMENT) ||
+               user.can(School.GRADE_STUDENT);
     }
     
     private static boolean hasAnyViewPermission() {
         Person user = school.getLoggedInUser();
+        if (user == null) return false;
         
         // Check if user can do any view actions
-            return user.can(School.VIEW_TEACHERS) ||
-                user.can(School.VIEW_STUDENTS) ||
-                user.can(School.VIEW_COURSES) ||
-                user.can(School.VIEW_ENROLLMENTS) ||
-                user.can(School.VIEW_OWN_ENROLLMENTS) ||
-                user.can(School.VIEW_GRADES) ||
-                user.can(School.VIEW_OWN_GRADES);
+        return user.can(School.VIEW_TEACHERS) ||
+               user.can(School.VIEW_STUDENTS) ||
+               user.can(School.VIEW_COURSES) ||
+               user.can(School.VIEW_ENROLLMENTS) ||
+               user.can(School.VIEW_OWN_ENROLLMENTS) ||
+               user.can(School.VIEW_GRADES) ||
+               user.can(School.VIEW_OWN_GRADES);
     }
     
     // ==================== SUB MENUS ====================
     
     private static void showManagementMenu() {
-        int choice;
         Person user = school.getLoggedInUser();
+        
+        // FIX: Add null check
+        if (user == null) {
+            System.out.println("You are not logged in.");
+            return;
+        }
+        
+        int choice;
         
         do {
             System.out.println("\n+----------------------------------------+");
@@ -202,14 +221,28 @@ public class Main {
                 System.out.println("Invalid choice.");
             }
             
-        } while (choice != 0);
+            // FIX: Refresh user in case of logout
+            user = school.getLoggedInUser();
+            
+        } while (choice != 0 && user != null);
         
-        System.out.println("Returning to Main Menu...");
+        if (user == null) {
+            System.out.println("You have been logged out.");
+        } else {
+            System.out.println("Returning to Main Menu...");
+        }
     }
     
     private static void showViewMenu() {
-        int choice;
         Person user = school.getLoggedInUser();
+        
+        // FIX: Add null check
+        if (user == null) {
+            System.out.println("You are not logged in.");
+            return;
+        }
+        
+        int choice;
         
         do {
             System.out.println("\n+----------------------------------------+");
@@ -245,15 +278,29 @@ public class Main {
             
             choice = getIntInput("Choose: ");
             
-            // Handle view actions based on choice
+            // Handle view actions based on choice - using print methods
             switch (choice) {
-                case 11: if (user.can(School.VIEW_TEACHERS)) school.viewTeachers(); break;
-                case 12: if (user.can(School.VIEW_STUDENTS)) school.viewStudents(); break;
-                case 13: if (user.can(School.VIEW_COURSES)) school.viewCourses(); break;
-                case 14: if (user.can(School.VIEW_ENROLLMENTS)) school.viewEnrollments(); break;
-                case 15: if (user.can(School.VIEW_OWN_ENROLLMENTS)) school.viewOwnEnrollments(); break;
-                case 16: if (user.can(School.VIEW_GRADES)) school.viewGrades(); break;
-                case 17: if (user.can(School.VIEW_OWN_GRADES)) school.viewOwnGrades(); break;
+                case 11: 
+                    if (user.can(School.VIEW_TEACHERS)) school.printTeachers(); 
+                    break;
+                case 12: 
+                    if (user.can(School.VIEW_STUDENTS)) school.printStudents(); 
+                    break;
+                case 13: 
+                    if (user.can(School.VIEW_COURSES)) school.printCourses(); 
+                    break;
+                case 14: 
+                    if (user.can(School.VIEW_ENROLLMENTS)) school.printEnrollments(); 
+                    break;
+                case 15: 
+                    if (user.can(School.VIEW_OWN_ENROLLMENTS)) school.printOwnEnrollments(); 
+                    break;
+                case 16: 
+                    if (user.can(School.VIEW_GRADES)) school.printGrades(); 
+                    break;
+                case 17: 
+                    if (user.can(School.VIEW_OWN_GRADES)) school.printOwnGrades(); 
+                    break;
                 case 0: 
                     System.out.println("Returning to Main Menu...");
                     break;
@@ -264,7 +311,15 @@ public class Main {
                         System.out.println("Invalid choice.");
                     }
             }
-        } while (choice != 0);
+            
+            // FIX: Refresh user in case of logout
+            user = school.getLoggedInUser();
+            
+        } while (choice != 0 && user != null);
+        
+        if (user == null) {
+            System.out.println("You have been logged out.");
+        }
     }
     
     private static String padRight(String text, int length) {

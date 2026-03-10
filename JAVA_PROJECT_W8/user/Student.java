@@ -1,4 +1,5 @@
 package user;
+
 import controller.School;
 
 public class Student extends Person {
@@ -6,11 +7,14 @@ public class Student extends Person {
     private String major;
     private IPerson createdBy;
 
-    public Student(String studentId, String fullName, String username, 
-                    String password, String major, IPerson createdBy) {
-        super(studentId, fullName, username, password, "Student");
+    public Student(Person person, String major, IPerson createdBy) {
+        super(person.getId(), person.getFullName(), person.getUsername(), person.getPassword());
         setMajor(major);
         this.createdBy = createdBy;
+    }
+    
+    public Student(Person person, IPerson createdBy) {
+        this(person, "Undeclared", createdBy);
     }
 
     public String getMajor() { return major; }
@@ -41,16 +45,22 @@ public class Student extends Person {
         
         return true;
     }
-
     @Override
     public String toString() {
-        String creator = (createdBy == null) ? "System" : createdBy.getFullName();
-        return "Student{" +
-                "id='" + getId() + '\'' +
-                ", fullName='" + getFullName() + '\'' +
-                ", major='" + major + '\'' +
-                ", role='" + getRole() + '\'' +
-                ", createdBy='" + creator + '\'' +
+        return super.toString() + " Student{" +
+                "major='" + major + '\'' +
+                ", createdBy='" + ((createdBy == null) ? "System" : createdBy.getFullName()) + '\'' +
                 '}';
     }
+
+    // @Override
+    // public String toString() {
+    //     String creator = (createdBy == null) ? "System" : createdBy.getFullName();
+    //     return "Student{" +
+    //             "id='" + getId() + '\'' +
+    //             ", fullName='" + getFullName() + '\'' +
+    //             ", major='" + major + '\'' +
+    //             ", createdBy='" + creator + '\'' +
+    //             '}';
+    // }
 }
