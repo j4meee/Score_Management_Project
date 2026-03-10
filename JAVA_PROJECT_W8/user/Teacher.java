@@ -46,10 +46,6 @@ public class Teacher extends Person {
 
     @Override
     public String toString() {
-        return "Teacher{" +
-                "id='" + getId() + '\'' +
-                ", fullName='" + getFullName() + '\'' +
-                ", dept='" + department + '\'' +
-                '}';
+    return super.toString() + ", dept='" + this.department + "'}";
     }
 }

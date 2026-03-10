@@ -5,15 +5,15 @@ import controller.School;
 public class Student extends Person {
     
     private String major;
-    private IPerson createdBy;
+    private Person createdBy;
 
-    public Student(Person person, String major, IPerson createdBy) {
+    public Student(Person person, String major, Person createdBy) {
         super(person.getId(), person.getFullName(), person.getUsername(), person.getPassword());
         setMajor(major);
         this.createdBy = createdBy;
     }
     
-    public Student(Person person, IPerson createdBy) {
+    public Student(Person person, Person createdBy) {
         this(person, "Undeclared", createdBy);
     }
 

@@ -89,7 +89,7 @@ public class Person implements IPerson {
     @Override
     public String toString() {
         return "Person{" +
-                // "id='" + id + '\'' +
+                "id='" + id + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", username='" + username + '\'' +
                 ", active=" + active +

@@ -21,10 +21,6 @@ public class Admin extends Person {
 
     @Override
     public String toString() {
-        return "Admin{" +
-                "id='" + getId() + '\'' +
-                ", fullName='" + getFullName() + '\'' +
-                ", username='" + getUsername() + '\'' +
-                '}';
+    return super.toString() + "}";
     }
 }
