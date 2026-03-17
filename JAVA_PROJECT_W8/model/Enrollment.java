@@ -21,13 +21,14 @@ public class Enrollment {
         setSemester(semester);
         setYear(year);
         setEnrolledBy(enrolledBy);
-        this.score = 0.0;
+        this.score = -1.0; // -1 means "not graded yet"
     }
 
     public String getEnrollmentId() { return enrollmentId; }
     public Student getStudent()     { return student; }
     public Course getCourse()       { return course; }
     public double getScore()        { return score; }
+    public boolean isGraded()       { return score >= 0; }
     public IPerson getEnrolledBy()  { return enrolledBy; }
     public String getSemester()     { return semester; }
     public int getYear()            { return year; }
@@ -57,6 +58,7 @@ public class Enrollment {
     }
 
     public String getLetterGrade() {
+        if (score < 0) return "N/A";
         if (score >= 90) return "A";
         else if (score >= 80) return "B";
         else if (score >= 70) return "C";
@@ -77,8 +79,9 @@ public class Enrollment {
         String courseCode     = (course     == null) ? "UNKNOWN" : course.getCode();
         String enrolledByName = (enrolledBy == null) ? "System"  : enrolledBy.getFullName();
 
+        String scoreText = isGraded() ? String.valueOf(score) : "N/A";
         return enrollmentId + ": " + studentName + " enrolled in " + courseCode +
-               " (" + semester + " " + year + ") Score: " + score +
+               " (" + semester + " " + year + ") Score: " + scoreText +
                " (" + getLetterGrade() + ") Enrolled by: " + enrolledByName;
     }
 }

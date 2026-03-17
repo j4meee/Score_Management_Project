@@ -425,7 +425,7 @@ public class School {
         System.out.println("\n--- ALL GRADES ---");
         boolean found = false;
         for (Enrollment enrollment : enrollments) {
-            if (enrollment.getScore() > 0) {
+            if (enrollment.isGraded()) {
                 System.out.println(enrollment);
                 found = true;
             }
@@ -441,7 +441,7 @@ public class School {
         boolean found = false;
         for (Enrollment enrollment : enrollments) {
             if (enrollment.getStudent().getId().equals(loggedInUser.getId())
-                    && enrollment.getScore() > 0) {
+                    && enrollment.isGraded()) {
                 System.out.println(enrollment);
                 found = true;
             }
@@ -450,7 +450,7 @@ public class School {
     }
 
     // ==================== PDF SECTION 9-10: ANONYMOUS INNER CLASS DEMO ====================
-    // Demonstrates filtering without a separate named class file.
+    // Demonstrates filtering without a separate named class file.all
     public void demonstrateAnonymousInnerClass() {
         System.out.println("\n--- Anonymous Inner Class: filter active users ---");
 
