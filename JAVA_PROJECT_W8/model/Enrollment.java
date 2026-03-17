@@ -78,7 +78,7 @@ public class Enrollment {
         String enrolledByName = (enrolledBy == null) ? "System"  : enrolledBy.getFullName();
 
         return enrollmentId + ": " + studentName + " enrolled in " + courseCode +
-               " (" + semester + " " + year + ") Score: " + score + " (" + getLetterGrade() + ")" +
-               " Enrolled by: " + enrolledByName;
+               " (" + semester + " " + year + ") Score: " + score +
+               " (" + getLetterGrade() + ") Enrolled by: " + enrolledByName;
     }
 }

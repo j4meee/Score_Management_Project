@@ -24,8 +24,8 @@ public class Main {
                 choice = getIntInput("Choose: ");
 
                 switch (choice) {
-                    case 1: handleLogin();          break;
-                    case 2: school.printCourses();  break;
+                    case 1: handleLogin();         break;
+                    case 2: school.printCourses(); break;
                     case 0: System.out.println("Goodbye!"); break;
                     default: System.out.println("Invalid choice.");
                 }
@@ -50,9 +50,9 @@ public class Main {
 
     private static void showMainMenu() {
         System.out.println("\n+----------------------------------------+");
-        System.out.println("|         CADT UNIVERSITY SYSTEM        |");
+        System.out.println("|         CADT UNIVERSITY SYSTEM         |");
         System.out.println("+----------------------------------------+");
-        System.out.println("|           MAIN MENU (Not Logged In)   |");
+        System.out.println("|        MAIN MENU (Not Logged In)       |");
         System.out.println("+----------------------------------------+");
         System.out.println("| 1) Login                               |");
         System.out.println("| 2) View Courses (Public)               |");
@@ -65,9 +65,10 @@ public class Main {
         if (user == null) { System.out.println("Error: Not logged in."); return; }
 
         System.out.println("\n+----------------------------------------+");
-        System.out.println("|         CADT UNIVERSITY SYSTEM        |");
+        System.out.println("|         CADT UNIVERSITY SYSTEM         |");
         System.out.println("+----------------------------------------+");
-        System.out.println("| Logged In: " + padRight(user.getClass().getSimpleName() + " - " + user.getFullName(), 30) + " |");
+        System.out.println("| Logged In: " + padRight(
+            user.getClass().getSimpleName() + " - " + user.getFullName(), 30) + " |");
         System.out.println("+----------------------------------------+");
         System.out.println("|              MAIN MENU                 |");
         System.out.println("+----------------------------------------+");
@@ -106,8 +107,6 @@ public class Main {
     }
 
     // ==================== MANAGEMENT MENU ====================
-    // Build allowed actions list ONCE using can() — then use that same list
-    // to print the menu AND to dispatch the chosen action. No duplicate can() calls.
 
     private static void showManagementMenu() {
         Person user = school.getLoggedInUser();
@@ -116,7 +115,6 @@ public class Main {
         int choice;
 
         do {
-            // Build allowed actions ONCE — can() called here only
             ArrayList<String> allowedActions = new ArrayList<>();
             if (user.can(School.CREATE_TEACHER))          allowedActions.add(School.CREATE_TEACHER);
             if (user.can(School.DELETE_TEACHER))          allowedActions.add(School.DELETE_TEACHER);
@@ -129,19 +127,18 @@ public class Main {
             if (user.can(School.CREATE_ENROLLMENT))       allowedActions.add(School.CREATE_ENROLLMENT);
             if (user.can(School.GRADE_STUDENT))           allowedActions.add(School.GRADE_STUDENT);
 
-            // Print menu from list — no second can() call
             System.out.println("\n+----------------------------------------+");
             System.out.println("|           MANAGEMENT MENU              |");
             System.out.println("+----------------------------------------+");
             for (int i = 0; i < allowedActions.size(); i++) {
-                System.out.println("| " + padLeft((i + 1) + ") " + formatAction(allowedActions.get(i)), 38) + " |");
+                System.out.println("| " + padLeft((i + 1) + ") " +
+                    formatAction(allowedActions.get(i)), 38) + " |");
             }
             System.out.println("| " + padLeft("0) Back to Main Menu", 38) + " |");
             System.out.println("+----------------------------------------+");
 
             choice = getIntInput("Choose: ");
 
-            // Dispatch from list — no second can() call
             if (choice >= 1 && choice <= allowedActions.size()) {
                 handleManagementAction(allowedActions.get(choice - 1));
             } else if (choice != 0) {
@@ -180,7 +177,6 @@ public class Main {
         int choice;
 
         do {
-            // Build allowed actions ONCE — can() called here only
             ArrayList<String> allowedActions = new ArrayList<>();
             if (user.can(School.VIEW_TEACHERS))        allowedActions.add(School.VIEW_TEACHERS);
             if (user.can(School.VIEW_STUDENTS))        allowedActions.add(School.VIEW_STUDENTS);
@@ -190,19 +186,18 @@ public class Main {
             if (user.can(School.VIEW_GRADES))          allowedActions.add(School.VIEW_GRADES);
             if (user.can(School.VIEW_OWN_GRADES))      allowedActions.add(School.VIEW_OWN_GRADES);
 
-            // Print menu from list — no second can() call
             System.out.println("\n+----------------------------------------+");
             System.out.println("|              VIEW MENU                 |");
             System.out.println("+----------------------------------------+");
             for (int i = 0; i < allowedActions.size(); i++) {
-                System.out.println("| " + padLeft((i + 1) + ") " + formatAction(allowedActions.get(i)), 38) + " |");
+                System.out.println("| " + padLeft((i + 1) + ") " +
+                    formatAction(allowedActions.get(i)), 38) + " |");
             }
             System.out.println("| " + padLeft("0) Back to Main Menu", 38) + " |");
             System.out.println("+----------------------------------------+");
 
             choice = getIntInput("Choose: ");
 
-            // Dispatch from list — no second can() call
             if (choice >= 1 && choice <= allowedActions.size()) {
                 handleViewAction(allowedActions.get(choice - 1));
             } else if (choice != 0) {
@@ -218,13 +213,13 @@ public class Main {
 
     private static void handleViewAction(String action) {
         switch (action) {
-            case School.VIEW_TEACHERS:        school.printTeachers();        break;
-            case School.VIEW_STUDENTS:        school.printStudents();        break;
-            case School.VIEW_COURSES:         school.printCourses();         break;
-            case School.VIEW_ENROLLMENTS:     school.printEnrollments();     break;
-            case School.VIEW_OWN_ENROLLMENTS: school.printOwnEnrollments();  break;
-            case School.VIEW_GRADES:          school.printGrades();          break;
-            case School.VIEW_OWN_GRADES:      school.printOwnGrades();       break;
+            case School.VIEW_TEACHERS:        school.printTeachers();       break;
+            case School.VIEW_STUDENTS:        school.printStudents();       break;
+            case School.VIEW_COURSES:         school.printCourses();        break;
+            case School.VIEW_ENROLLMENTS:     school.printEnrollments();    break;
+            case School.VIEW_OWN_ENROLLMENTS: school.printOwnEnrollments(); break;
+            case School.VIEW_GRADES:          school.printGrades();         break;
+            case School.VIEW_OWN_GRADES:      school.printOwnGrades();      break;
         }
     }
 
@@ -274,23 +269,22 @@ public class Main {
         school.createEnrollment("S001", "C001", "Fall", 2024);
         school.logout();
 
-        System.out.println("\nSample data created successfully!");
-        System.out.println("Default admin: admin / 1234\n");
+        System.out.println("Sample data created. Default admin: admin / 1234\n");
 
-        // ===================================================
+        // ============================================================
         // POLYMORPHISM DEMO (PDF Section 5)
-        // Step A: one list, different roles
-        // Step B: same can() call, different results
-        // ===================================================
+        // FIX: Person is abstract — create Admin/Teacher/Student directly.
+        // Same can() call on each, Java dispatches to the right version.
+        // ============================================================
         System.out.println("========================================");
-        System.out.println("   POLYMORPHISM DEMO");
+        System.out.println("   POLYMORPHISM DEMO (PDF Section 1-5)");
         System.out.println("   Same can() call, different results");
         System.out.println("========================================");
 
         ArrayList<Person> staffs = new ArrayList<>();
-        staffs.add(new Admin(new Person("A01", "Admin User",   "adminDemo",   "1234")));
-        staffs.add(new Teacher(new Person("T02", "Teacher User", "teacherDemo", "1234"), "Science"));
-        staffs.add(new Student(new Person("S03", "Student User", "studentDemo", "1234"), "CS", null));
+        staffs.add(new Admin("A01", "Admin User",   "adminDemo",   "pass1234"));
+        staffs.add(new Teacher("T02", "Teacher User", "teacherDemo", "pass1234", "Science"));
+        staffs.add(new Student("S03", "Student User", "studentDemo", "pass1234", "CS", null));
 
         String[] actions = {
             School.CREATE_TEACHER,
@@ -302,13 +296,21 @@ public class Main {
         for (Person s : staffs) {
             System.out.println("\n[ " + s.getClass().getSimpleName() + " ] " + s.getUsername());
             for (String action : actions) {
-                System.out.println("  " + s.getUsername() + " can " + action + "? " + s.can(action));
+                System.out.println("  can " + action + "? " + s.can(action));
             }
         }
 
-        System.out.println("\n=> Java chose the right can() at runtime (dynamic dispatch).");
-        System.out.println("=> School never checked instanceof — each role decided its own permissions.");
+        System.out.println("\n=> Java chose the right can() at runtime.");
+        System.out.println("=> No instanceof check — each role decided its own permissions.");
         System.out.println("========================================\n");
+
+        // ============================================================
+        // LAMBDA DEMO (PDF Section 9-15)
+        // ============================================================
+        school.login("admin", "1234");
+        school.demonstrateAnonymousInnerClass();
+        school.demonstrateLambdaExpression();
+        school.logout();
     }
 
     // ==================== INPUT HANDLING ====================
@@ -343,9 +345,7 @@ public class Main {
     }
 
     private static boolean getBooleanInput(String prompt) {
-        System.out.print(prompt + " (1=Yes, 0=No): ");
-        int input = getIntInput("");
-        return input == 1;
+        return getIntInput(prompt + " (1=Yes, 0=No): ") == 1;
     }
 
     // ==================== HANDLER METHODS ====================
@@ -412,16 +412,11 @@ public class Main {
 
     private static void handleUpdateCourse() {
         System.out.println("\n--- Update Course ---");
-        String id    = getStringInput("Course ID: ");
-        String title = getStringInput("New Title (press Enter to skip): ");
-        String code  = getStringInput("New Code (press Enter to skip): ");
-
-        int credits = -1;
-        System.out.print("New Credits (enter 0 to skip): ");
-        if (sc.hasNextInt()) { credits = sc.nextInt(); sc.nextLine(); }
-        else                 { sc.nextLine(); }
-
-        String dept = getStringInput("New Department (press Enter to skip): ");
+        String id      = getStringInput("Course ID: ");
+        String title   = getStringInput("New Title (press Enter to skip): ");
+        String code    = getStringInput("New Code (press Enter to skip): ");
+        int credits    = getIntInput("New Credits (0 to skip): ");
+        String dept    = getStringInput("New Department (press Enter to skip): ");
         school.updateCourse(id, title, code, credits, dept);
         System.out.println(school.getLastMessage());
     }

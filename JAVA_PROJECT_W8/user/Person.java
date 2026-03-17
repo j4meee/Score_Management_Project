@@ -1,9 +1,9 @@
 package user;
 
-// Person.can() returns false by default.
-// Child classes (Admin, Teacher, Student) OVERRIDE can() with their own rules.
-// This is polymorphism — same method signature, different behavior per role.
-public class Person implements IPerson {
+// PDF Section 3: Abstraction — defining what a system must do without specifying how.
+// PDF Section 4: Abstract Class — cannot be instantiated, serves as base class.
+// "new Person(...)" is now IMPOSSIBLE — Person is only a concept, not a real role.
+public abstract class Person implements IPerson {
 
     private String id;
     private String fullName;
@@ -44,7 +44,7 @@ public class Person implements IPerson {
 
     public void setPassword(String password) {
         String pw = (password == null) ? "" : password;
-        this.password = (pw.length() < 4) ? "0000" : pw;
+        this.password = (pw.length() <= 4) ? "0000" : pw;
     }
 
     public void setActive(boolean active) {
@@ -60,12 +60,11 @@ public class Person implements IPerson {
         return s == null || s.trim().isEmpty();
     }
 
-    // Default: Person has no permissions.
-    // Subclasses OVERRIDE this — that's polymorphism (override, not overload).
+    // PDF Section 4-5: Abstract method — subclasses MUST implement this differently.
+    // Admin, Teacher, Student each decide their own permissions.
+    // This is abstraction: we define WHAT must happen, not HOW.
     @Override
-    public boolean can(String action) {
-        return false;
-    }
+    public abstract boolean can(String action);
 
     @Override
     public boolean equals(Object obj) {

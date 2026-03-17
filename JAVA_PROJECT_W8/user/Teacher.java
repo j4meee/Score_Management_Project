@@ -2,18 +2,19 @@ package user;
 
 import controller.School;
 
-// Teacher OVERRIDES can() — can view and grade, not manage users.
+// PDF Section 5: Subclass implementing the abstract method differently.
+// Teacher.can() returns true only for view and grade actions.
 public class Teacher extends Person {
 
     private String department;
 
-    public Teacher(Person person, String department) {
-        super(person.getId(), person.getFullName(), person.getUsername(), person.getPassword());
+    public Teacher(String id, String fullName, String username, String password, String department) {
+        super(id, fullName, username, password);
         setDepartment(department);
     }
 
-    public Teacher(Person person) {
-        this(person, "Unknown");
+    public Teacher(String id, String fullName, String username, String password) {
+        this(id, fullName, username, password, "Unknown");
     }
 
     public String getDepartment() { return department; }
@@ -22,6 +23,8 @@ public class Teacher extends Person {
         this.department = isBlank(department) ? "Unknown" : department.trim();
     }
 
+    // PDF Section 5: Different implementation of the abstract method.
+    // Teacher can view students, courses, grades, and grade students — nothing else.
     @Override
     public boolean can(String action) {
         if (action == null) return false;
@@ -40,6 +43,7 @@ public class Teacher extends Person {
 
     @Override
     public String toString() {
-        return super.toString() + ", dept='" + this.department + "'}";
+        return super.toString().replace("Person{", "Teacher{") +
+               ", dept='" + department + "'}";
     }
 }

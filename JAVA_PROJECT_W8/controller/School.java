@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 
+import filter.StaffFilter;
 import model.Course;
 import model.Enrollment;
 import user.Admin;
@@ -84,10 +85,9 @@ public class School {
     }
 
     // ==================== BOOTSTRAP ====================
+    // FIX: Person is now abstract — we must use Admin directly, not new Person().
     private void seedDefaultAdmin() {
-        Person admin = new Person("01234", "Default Admin", "admin", "1234");
-        Admin adminUser = new Admin(admin);
-        users.add(adminUser);
+        users.add(new Admin("01234", "Default Admin", "admin", "1234"));
     }
 
     // ==================== PERMISSION GUARDS ====================
@@ -112,7 +112,8 @@ public class School {
             return false;
         }
         if (!loggedInUser.can(action)) {
-            setLastMessage("Action denied: " + loggedInUser.getClass().getSimpleName() + " cannot " + action);
+            setLastMessage("Action denied: " + loggedInUser.getClass().getSimpleName() +
+                           " cannot " + action);
             return false;
         }
         return true;
@@ -136,7 +137,8 @@ public class School {
                     return;
                 }
                 loggedInUser = user;
-                setLastMessage("Login successful: " + user.getClass().getSimpleName() + " - " + user.getFullName());
+                setLastMessage("Login successful: " +
+                               user.getClass().getSimpleName() + " - " + user.getFullName());
                 return;
             }
         }
@@ -166,8 +168,8 @@ public class School {
             }
         }
 
-        Teacher newTeacher = new Teacher(new Person(teacherId, fullName, username, password), department);
-        users.add(newTeacher);
+        // FIX: Teacher now takes plain fields, not a Person wrapper.
+        users.add(new Teacher(teacherId, fullName, username, password, department));
         setLastMessage("Teacher created successfully.");
     }
 
@@ -202,8 +204,8 @@ public class School {
             }
         }
 
-        Student newStudent = new Student(new Person(studentId, fullName, username, password), major, loggedInUser);
-        users.add(newStudent);
+        // FIX: Student now takes plain fields, not a Person wrapper.
+        users.add(new Student(studentId, fullName, username, password, major, loggedInUser));
         setLastMessage("Student created successfully.");
     }
 
@@ -321,7 +323,7 @@ public class School {
 
         for (Enrollment enrollment : enrollments) {
             if (enrollment.getStudent().equals(student) &&
-                enrollment.getCourse().equals(course) &&
+                enrollment.getCourse().equals(course)   &&
                 enrollment.getSemester().equalsIgnoreCase(semester) &&
                 enrollment.getYear() == year) {
                 setLastMessage("Student already enrolled in this course for this semester.");
@@ -401,10 +403,8 @@ public class School {
         }
     }
 
-    // POLYMORPHISM FIX: No instanceof cast needed.
-    // School only knows loggedInUser as Person.
+    // No instanceof cast needed — match by ID only.
     // can(VIEW_OWN_ENROLLMENTS) already ensures only Students reach this point.
-    // We match by ID — clean, no role-type checking.
     public void printOwnEnrollments() {
         if (!requireLogin() || !requirePermission(VIEW_OWN_ENROLLMENTS)) return;
 
@@ -433,8 +433,7 @@ public class School {
         if (!found) System.out.println("No grades recorded yet.");
     }
 
-    // POLYMORPHISM FIX: No instanceof cast needed.
-    // Same pattern as printOwnEnrollments — match by ID only.
+    // No instanceof cast needed — match by ID only.
     public void printOwnGrades() {
         if (!requireLogin() || !requirePermission(VIEW_OWN_GRADES)) return;
 
@@ -448,6 +447,46 @@ public class School {
             }
         }
         if (!found) System.out.println("No grades recorded yet.");
+    }
+
+    // ==================== PDF SECTION 9-10: ANONYMOUS INNER CLASS DEMO ====================
+    // Demonstrates filtering without a separate named class file.
+    public void demonstrateAnonymousInnerClass() {
+        System.out.println("\n--- Anonymous Inner Class: filter active users ---");
+
+        // PDF Section 9: Anonymous inner class — no class name, created at the point of use.
+        StaffFilter activeFilter = new StaffFilter() {
+            @Override
+            public boolean test(Person staff) {
+                return staff != null && staff.isActive();
+            }
+        };
+
+        for (Person user : users) {
+            if (activeFilter.test(user)) {
+                System.out.println("  Active: " + user.getFullName() +
+                                   " (" + user.getClass().getSimpleName() + ")");
+            }
+        }
+    }
+
+    // ==================== PDF SECTION 13-15: LAMBDA EXPRESSION DEMO ====================
+    // Converts the anonymous class above into a lambda — much shorter.
+    public void demonstrateLambdaExpression() {
+        System.out.println("\n--- Lambda Expression: same filter, less code ---");
+
+        // PDF Section 13: Lambda replaces the entire anonymous class.
+        // Syntax: (parameter) -> expression
+        StaffFilter activeFilter = staff -> staff != null && staff.isActive();
+
+        // PDF Section 15: Lambdas work naturally with streams.
+        // activeFilter::test wraps our StaffFilter into what stream().filter() expects.
+        System.out.println("Active users via stream + lambda:");
+        users.stream()
+             .filter(activeFilter::test)
+             .forEach(staff -> System.out.println(
+                 "  " + staff.getFullName() + " (" + staff.getClass().getSimpleName() + ")"
+             ));
     }
 
     // ==================== HELPER ====================

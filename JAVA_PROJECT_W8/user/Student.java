@@ -2,20 +2,22 @@ package user;
 
 import controller.School;
 
-// Student OVERRIDES can() — can only view own data.
+// PDF Section 5: Subclass implementing the abstract method differently.
+// Student.can() returns true only for viewing their own data.
 public class Student extends Person {
 
     private String major;
-    private Person createdBy;
+    private IPerson createdBy;
 
-    public Student(Person person, String major, Person createdBy) {
-        super(person.getId(), person.getFullName(), person.getUsername(), person.getPassword());
+    public Student(String id, String fullName, String username, String password,
+                   String major, IPerson createdBy) {
+        super(id, fullName, username, password);
         setMajor(major);
         this.createdBy = createdBy;
     }
 
-    public Student(Person person, Person createdBy) {
-        this(person, "Undeclared", createdBy);
+    public Student(String id, String fullName, String username, String password, IPerson createdBy) {
+        this(id, fullName, username, password, "Undeclared", createdBy);
     }
 
     public String getMajor()      { return major; }
@@ -26,6 +28,8 @@ public class Student extends Person {
         this.major = isBlank(major) ? "Undeclared" : major.trim();
     }
 
+    // PDF Section 5: Different implementation of the abstract method.
+    // Student can only view courses and their own enrollments/grades.
     @Override
     public boolean can(String action) {
         if (action == null) return false;
@@ -43,9 +47,8 @@ public class Student extends Person {
 
     @Override
     public String toString() {
-        return super.toString() + " Student{" +
-                "major='" + major + '\'' +
-                ", createdBy='" + ((createdBy == null) ? "System" : createdBy.getFullName()) + '\'' +
-                '}';
+        return super.toString().replace("Person{", "Student{") +
+               ", major='" + major + '\'' +
+               ", createdBy='" + (createdBy == null ? "System" : createdBy.getFullName()) + "'}";
     }
 }
