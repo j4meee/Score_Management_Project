@@ -402,7 +402,7 @@ public class School {
     }
 
     // ==================== GRADE STUDENT (Teacher & Admin) ====================
-    public void gradeStudent(String enrollmentId, double score) {
+    public boolean gradeStudent(String enrollmentId, double score) {
         try {
             checkPermission(GRADE_STUDENT);
             
@@ -423,13 +423,14 @@ public class School {
                     enrollment.setScore(score);
                     setLastMessage("Grade recorded successfully. Grade: " + 
                                    enrollment.getLetterGrade());
-                    return;
+                    return true;
                 }
             }
             throw new EntityNotFoundException("Enrollment", enrollmentId);
         } catch (UnauthorizedActionException | EntityNotFoundException | InvalidScoreException e) {
             setLastMessage("Cannot grade student: " + e.getMessage());
         }
+        return false;
     }
 
     // ==================== VIEW METHODS ====================

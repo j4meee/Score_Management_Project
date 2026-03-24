@@ -674,8 +674,11 @@ public class Main {
         System.out.println("\n--- Grade Student ---");
         System.out.println("Note: You can only grade students who are enrolled in your courses.");
         String enrollId = getRequiredStringInput("Enrollment ID: ");
-        double score    = getDoubleInput("Score (0-100): ");
-        school.gradeStudent(enrollId, score);
-        System.out.println(school.getLastMessage());
+        boolean gradeRecorded;
+        do {
+            double score = getDoubleInput("Score (0-100): ");
+            gradeRecorded = school.gradeStudent(enrollId, score);
+            System.out.println(school.getLastMessage());
+        } while (!gradeRecorded && getBooleanInput("Try again with a different score?"));
     }
 }
