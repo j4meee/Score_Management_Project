@@ -1,19 +1,16 @@
 package user;
 
-// PDF Section 5: Subclass implementing the abstract method.
-// Admin.can() always returns true — Admin can do everything.
-// Variable type may be Person, but runtime type is Admin.
-// Java calls Admin.can() at runtime — this is dynamic dispatch (polymorphism).
+// Admin has full system access - can do everything
 public class Admin extends Person {
 
     public Admin(String id, String fullName, String username, String password) {
         super(id, fullName, username, password);
     }
 
-    // PDF Section 5: Concrete implementation of the abstract method.
     @Override
     public boolean can(String action) {
-        return true; // Admin can do everything
+        // Admin can do EVERYTHING in the system
+        return true;
     }
 
     @Override

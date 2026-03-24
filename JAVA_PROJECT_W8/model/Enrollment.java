@@ -21,7 +21,7 @@ public class Enrollment {
         setSemester(semester);
         setYear(year);
         setEnrolledBy(enrolledBy);
-        this.score = -1.0; // -1 means "not graded yet"
+        this.score = -1.0;
     }
 
     public String getEnrollmentId() { return enrollmentId; }

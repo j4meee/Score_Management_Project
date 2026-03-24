@@ -2,8 +2,12 @@ package user;
 
 import controller.School;
 
-// PDF Section 5: Subclass implementing the abstract method differently.
-// Teacher.can() returns true only for view and grade actions.
+// Teacher can:
+// - View all students in their courses
+// - View all courses
+// - View all enrollments
+// - View and assign grades
+// - Cannot create/delete users or courses (only Admin can)
 public class Teacher extends Person {
 
     private String department;
@@ -23,15 +27,27 @@ public class Teacher extends Person {
         this.department = isBlank(department) ? "Unknown" : department.trim();
     }
 
-    // PDF Section 5: Different implementation of the abstract method.
-    // Teacher can view students, courses, grades, and grade students — nothing else.
     @Override
     public boolean can(String action) {
         if (action == null) return false;
-        return action.equals(School.VIEW_STUDENTS) ||
-               action.equals(School.VIEW_COURSES)  ||
-               action.equals(School.VIEW_GRADES)   ||
-               action.equals(School.GRADE_STUDENT);
+        
+        // Teachers can view student information
+        if (action.equals(School.VIEW_STUDENTS)) return true;
+        
+        // Teachers can view all courses
+        if (action.equals(School.VIEW_COURSES)) return true;
+        
+        // Teachers can view all enrollments
+        if (action.equals(School.VIEW_ENROLLMENTS)) return true;
+        
+        // Teachers can view all grades
+        if (action.equals(School.VIEW_GRADES)) return true;
+        
+        // Teachers can grade students (MOST IMPORTANT)
+        if (action.equals(School.GRADE_STUDENT)) return true;
+        
+        // Teachers cannot create, delete, or modify users/courses
+        return false;
     }
 
     @Override

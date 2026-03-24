@@ -2,8 +2,12 @@ package user;
 
 import controller.School;
 
-// PDF Section 5: Subclass implementing the abstract method differently.
-// Student.can() returns true only for viewing their own data.
+// Student can:
+// - View all courses (public information)
+// - View their own enrollments only
+// - View their own grades only
+// - Cannot view other students' information
+// - Cannot grade anyone
 public class Student extends Person {
 
     private String major;
@@ -28,14 +32,32 @@ public class Student extends Person {
         this.major = isBlank(major) ? "Undeclared" : major.trim();
     }
 
-    // PDF Section 5: Different implementation of the abstract method.
-    // Student can only view courses and their own enrollments/grades.
     @Override
     public boolean can(String action) {
         if (action == null) return false;
-        return action.equals(School.VIEW_COURSES)         ||
-               action.equals(School.VIEW_OWN_ENROLLMENTS) ||
-               action.equals(School.VIEW_OWN_GRADES);
+        
+        // Students can view all courses (public information)
+        if (action.equals(School.VIEW_COURSES)) return true;
+        
+        // Students can view ONLY their own enrollments
+        if (action.equals(School.VIEW_OWN_ENROLLMENTS)) return true;
+        
+        // Students can view ONLY their own grades
+        if (action.equals(School.VIEW_OWN_GRADES)) return true;
+        
+        // Students CANNOT view other students' data
+        if (action.equals(School.VIEW_STUDENTS)) return false;
+        
+        // Students CANNOT view all enrollments
+        if (action.equals(School.VIEW_ENROLLMENTS)) return false;
+        
+        // Students CANNOT view all grades
+        if (action.equals(School.VIEW_GRADES)) return false;
+        
+        // Students CANNOT grade anyone
+        if (action.equals(School.GRADE_STUDENT)) return false;
+        
+        return false;
     }
 
     @Override

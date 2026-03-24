@@ -13,8 +13,10 @@ public class Main {
     private static School school = new School("CADT University", "Phnom Penh");
 
     public static void main(String[] args) {
-
         setupSampleData();
+        
+        // PDF Section 10: Demonstrate exception handling at startup
+        school.demonstrateExceptionHandling();
 
         int choice = 0;
 
@@ -26,6 +28,7 @@ public class Main {
                 switch (choice) {
                     case 1: handleLogin();         break;
                     case 2: school.printCourses(); break;
+                    case 3: demonstrateExceptionExamples(); break;
                     case 0: System.out.println("Goodbye!"); break;
                     default: System.out.println("Invalid choice.");
                 }
@@ -45,9 +48,64 @@ public class Main {
 
         sc.close();
     }
+    
+    // PDF Section 10: Exception examples with try-catch-finally
+    private static void demonstrateExceptionExamples() {
+        System.out.println("\n=== EXCEPTION HANDLING EXAMPLES ===");
+        
+        // Example 1: NumberFormatException
+        System.out.println("\n1. NumberFormatException Demo:");
+        System.out.print("   Enter a number (or 'abc' to see exception): ");
+        String input = sc.nextLine();
+        try {
+            int number = Integer.parseInt(input);
+            System.out.println("   You entered: " + number);
+        } catch (NumberFormatException e) {
+            System.out.println("   Error: '" + input + "' is not a valid number!");
+            System.out.println("   Exception message: " + e.getMessage());
+        }
+        
+        // Example 2: Multiple catch blocks
+        System.out.println("\n2. Multiple Catch Blocks Demo:");
+        System.out.print("   Enter an array index (0-4): ");
+        try {
+            int index = Integer.parseInt(sc.nextLine());
+            int[] array = {10, 20, 30, 40, 50};
+            System.out.println("   Value at index " + index + ": " + array[index]);
+        } catch (NumberFormatException e) {
+            System.out.println("   Error: That's not a valid number!");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("   Error: Index out of range! Valid indices: 0-4");
+        } catch (Exception e) {
+            System.out.println("   Unexpected error: " + e.getMessage());
+        }
+        
+        // Example 3: throw and throws demo
+        System.out.println("\n3. Custom Validation Demo:");
+        System.out.print("   Enter a score (0-100): ");
+        try {
+            double score = Double.parseDouble(sc.nextLine());
+            validateScore(score);
+            System.out.println("   Valid score: " + score);
+        } catch (NumberFormatException e) {
+            System.out.println("   Error: Please enter a valid number!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("   Error: " + e.getMessage());
+        }
+        
+        System.out.println("\n=== END EXCEPTION EXAMPLES ===");
+    }
+    
+    private static void validateScore(double score) {
+        if (score < 0) {
+            throw new IllegalArgumentException("Score cannot be negative!");
+        }
+        if (score > 100) {
+            throw new IllegalArgumentException("Score cannot exceed 100!");
+        }
+    }
 
     // ==================== MAIN MENUS ====================
-
     private static void showMainMenu() {
         System.out.println("\n+----------------------------------------+");
         System.out.println("|         CADT UNIVERSITY SYSTEM         |");
@@ -56,6 +114,7 @@ public class Main {
         System.out.println("+----------------------------------------+");
         System.out.println("| 1) Login                               |");
         System.out.println("| 2) View Courses (Public)               |");
+        System.out.println("| 3) Exception Handling Examples        |");
         System.out.println("| 0) Exit                                |");
         System.out.println("+----------------------------------------+");
     }
@@ -72,17 +131,23 @@ public class Main {
         System.out.println("+----------------------------------------+");
         System.out.println("|              MAIN MENU                 |");
         System.out.println("+----------------------------------------+");
-        if (hasAnyManagementPermission(user)) System.out.println("| 1) Management Menu                     |");
-        if (hasAnyViewPermission(user))       System.out.println("| 2) View Menu                           |");
+        
+        // Show management menu only if user has ANY management permission
+        if (hasAnyManagementPermission(user)) {
+            System.out.println("| 1) Management Menu (Create/Edit/Delete)     |");
+        }
+        
+        // Show view menu only if user has ANY view permission
+        if (hasAnyViewPermission(user)) {
+            System.out.println("| 2) View Menu (View Information)             |");
+        }
+        
         System.out.println("| 3) Logout                              |");
         System.out.println("| 0) Exit                                |");
         System.out.println("+----------------------------------------+");
     }
 
     // ==================== PERMISSION HELPERS ====================
-    // Polymorphism: user.can(action) dispatches to the correct role's can() at runtime.
-    // Main never checks instanceof — each role decides its own permissions.
-
     private static boolean hasAnyManagementPermission(Person user) {
         return user.can(School.CREATE_TEACHER)          ||
                user.can(School.DELETE_TEACHER)          ||
@@ -107,7 +172,6 @@ public class Main {
     }
 
     // ==================== MANAGEMENT MENU ====================
-
     private static void showManagementMenu() {
         Person user = school.getLoggedInUser();
         if (user == null) { System.out.println("You are not logged in."); return; }
@@ -116,6 +180,7 @@ public class Main {
 
         do {
             ArrayList<String> allowedActions = new ArrayList<>();
+            
             if (user.can(School.CREATE_TEACHER))          allowedActions.add(School.CREATE_TEACHER);
             if (user.can(School.DELETE_TEACHER))          allowedActions.add(School.DELETE_TEACHER);
             if (user.can(School.CREATE_STUDENT))          allowedActions.add(School.CREATE_STUDENT);
@@ -127,9 +192,17 @@ public class Main {
             if (user.can(School.CREATE_ENROLLMENT))       allowedActions.add(School.CREATE_ENROLLMENT);
             if (user.can(School.GRADE_STUDENT))           allowedActions.add(School.GRADE_STUDENT);
 
+            if (allowedActions.isEmpty()) {
+                System.out.println("\nYou don't have permission to access Management Menu.");
+                return;
+            }
+
             System.out.println("\n+----------------------------------------+");
             System.out.println("|           MANAGEMENT MENU              |");
             System.out.println("+----------------------------------------+");
+            System.out.println("| Role: " + padRight(user.getClass().getSimpleName(), 32) + " |");
+            System.out.println("+----------------------------------------+");
+            
             for (int i = 0; i < allowedActions.size(); i++) {
                 System.out.println("| " + padLeft((i + 1) + ") " +
                     formatAction(allowedActions.get(i)), 38) + " |");
@@ -165,11 +238,11 @@ public class Main {
             case School.SET_COURSE_AVAILABILITY: handleSetCourseAvailability(); break;
             case School.CREATE_ENROLLMENT:       handleCreateEnrollment();      break;
             case School.GRADE_STUDENT:           handleGradeStudent();          break;
+            default: System.out.println("Unknown action.");
         }
     }
 
     // ==================== VIEW MENU ====================
-
     private static void showViewMenu() {
         Person user = school.getLoggedInUser();
         if (user == null) { System.out.println("You are not logged in."); return; }
@@ -178,17 +251,26 @@ public class Main {
 
         do {
             ArrayList<String> allowedActions = new ArrayList<>();
+            
             if (user.can(School.VIEW_TEACHERS))        allowedActions.add(School.VIEW_TEACHERS);
             if (user.can(School.VIEW_STUDENTS))        allowedActions.add(School.VIEW_STUDENTS);
             if (user.can(School.VIEW_COURSES))         allowedActions.add(School.VIEW_COURSES);
             if (user.can(School.VIEW_ENROLLMENTS))     allowedActions.add(School.VIEW_ENROLLMENTS);
-            if (user.can(School.VIEW_OWN_ENROLLMENTS)) allowedActions.add(School.VIEW_OWN_ENROLLMENTS);
             if (user.can(School.VIEW_GRADES))          allowedActions.add(School.VIEW_GRADES);
+            if (user.can(School.VIEW_OWN_ENROLLMENTS)) allowedActions.add(School.VIEW_OWN_ENROLLMENTS);
             if (user.can(School.VIEW_OWN_GRADES))      allowedActions.add(School.VIEW_OWN_GRADES);
+
+            if (allowedActions.isEmpty()) {
+                System.out.println("\nYou don't have permission to access View Menu.");
+                return;
+            }
 
             System.out.println("\n+----------------------------------------+");
             System.out.println("|              VIEW MENU                 |");
             System.out.println("+----------------------------------------+");
+            System.out.println("| Role: " + padRight(user.getClass().getSimpleName(), 32) + " |");
+            System.out.println("+----------------------------------------+");
+            
             for (int i = 0; i < allowedActions.size(); i++) {
                 System.out.println("| " + padLeft((i + 1) + ") " +
                     formatAction(allowedActions.get(i)), 38) + " |");
@@ -220,11 +302,11 @@ public class Main {
             case School.VIEW_OWN_ENROLLMENTS: school.printOwnEnrollments(); break;
             case School.VIEW_GRADES:          school.printGrades();         break;
             case School.VIEW_OWN_GRADES:      school.printOwnGrades();      break;
+            default: System.out.println("Unknown view action.");
         }
     }
 
-    // ==================== FORMAT ACTION NAME FOR DISPLAY ====================
-
+    // ==================== FORMAT ACTION NAME ====================
     private static String formatAction(String action) {
         switch (action) {
             case School.CREATE_TEACHER:          return "Create Teacher";
@@ -237,9 +319,9 @@ public class Main {
             case School.SET_COURSE_AVAILABILITY: return "Set Course Availability";
             case School.CREATE_ENROLLMENT:       return "Create Enrollment";
             case School.GRADE_STUDENT:           return "Grade Student";
-            case School.VIEW_TEACHERS:           return "View Teachers";
-            case School.VIEW_STUDENTS:           return "View Students";
-            case School.VIEW_COURSES:            return "View Courses";
+            case School.VIEW_TEACHERS:           return "View All Teachers";
+            case School.VIEW_STUDENTS:           return "View All Students";
+            case School.VIEW_COURSES:            return "View All Courses";
             case School.VIEW_ENROLLMENTS:        return "View All Enrollments";
             case School.VIEW_OWN_ENROLLMENTS:    return "View My Enrollments";
             case School.VIEW_GRADES:             return "View All Grades";
@@ -249,7 +331,6 @@ public class Main {
     }
 
     // ==================== PADDING HELPERS ====================
-
     private static String padRight(String text, int length) {
         return String.format("%-" + length + "s", text);
     }
@@ -258,41 +339,46 @@ public class Main {
         return String.format("%" + length + "s", text);
     }
 
-    // ==================== SAMPLE DATA + POLYMORPHISM DEMO ====================
-
+    // ==================== SAMPLE DATA ====================
     private static void setupSampleData() {
         System.out.println("Setting up sample data...");
         school.login("admin", "1234");
-        school.createTeacher("T001", "Dr. Smith", "smith", "pass123", "Math");
-        school.createStudent("S001", "John Doe", "john", "student123", "CS");
-        school.createCourse("C001", "Linear Algebra", "MATH101", 4, "Math", true);
+        school.createTeacher("T001", "Dr. Smith", "smith", "pass123", "Mathematics");
+        school.createTeacher("T002", "Prof. Johnson", "johnson", "pass123", "Computer Science");
+        school.createStudent("S001", "John Doe", "john", "student123", "Computer Science");
+        school.createStudent("S002", "Jane Smith", "jane", "student123", "Mathematics");
+        school.createCourse("C001", "Linear Algebra", "MATH101", 4, "Mathematics", true);
+        school.createCourse("C002", "Data Structures", "CS201", 4, "Computer Science", true);
+        school.createCourse("C003", "Calculus I", "MATH102", 3, "Mathematics", true);
         school.createEnrollment("S001", "C001", "Fall", 2024);
+        school.createEnrollment("S001", "C002", "Fall", 2024);
+        school.createEnrollment("S002", "C001", "Fall", 2024);
         school.logout();
 
-        System.out.println("Sample data created. Default admin: admin / 1234\n");
+        System.out.println("Sample data created.");
+        System.out.println("Default Admin: admin / 1234");
+        System.out.println("Teacher: smith / pass123");
+        System.out.println("Student: john / student123\n");
 
-        // ============================================================
-        // POLYMORPHISM DEMO (PDF Section 5)
-        // FIX: Person is abstract — create Admin/Teacher/Student directly.
-        // Same can() call on each, Java dispatches to the right version.
-        // ============================================================
+        // ==================== POLYMORPHISM DEMO ====================
         System.out.println("========================================");
         System.out.println("   POLYMORPHISM DEMO (PDF Section 1-5)");
         System.out.println("   Same can() call, different results");
         System.out.println("========================================");
 
         ArrayList<Person> staffs = new ArrayList<>();
-        staffs.add(new Admin("A01", "Admin User",   "adminDemo",   "pass1234"));
+        staffs.add(new Admin("A01", "Admin User", "adminDemo", "pass1234"));
         staffs.add(new Teacher("T02", "Teacher User", "teacherDemo", "pass1234", "Science"));
         staffs.add(new Student("S03", "Student User", "studentDemo", "pass1234", "CS", null));
 
+        // FIXED: Using ONLY constants that exist in School class
         String[] actions = {
             School.CREATE_TEACHER,
             School.GRADE_STUDENT,
-            School.VIEW_OWN_GRADES
+            School.VIEW_OWN_GRADES,
+            School.VIEW_STUDENTS      // This exists in School class
         };
 
-        // Same line s.can(action) — Java picks the right can() at runtime (dynamic dispatch)
         for (Person s : staffs) {
             System.out.println("\n[ " + s.getClass().getSimpleName() + " ] " + s.getUsername());
             for (String action : actions) {
@@ -304,9 +390,7 @@ public class Main {
         System.out.println("=> No instanceof check — each role decided its own permissions.");
         System.out.println("========================================\n");
 
-        // ============================================================
-        // LAMBDA DEMO (PDF Section 9-15)
-        // ============================================================
+        // ==================== LAMBDA DEMO ====================
         school.login("admin", "1234");
         school.demonstrateAnonymousInnerClass();
         school.demonstrateLambdaExpression();
@@ -314,47 +398,79 @@ public class Main {
     }
 
     // ==================== INPUT HANDLING ====================
-
     private static int getIntInput(String prompt) {
         System.out.print(prompt);
-        while (!sc.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number.");
-            sc.next();
-            System.out.print(prompt);
+        while (true) {
+            try {
+                String input = sc.nextLine().trim();
+                if (input.isEmpty()) {
+                    System.out.print("Please enter a number: ");
+                    continue;
+                }
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a number: ");
+            }
         }
-        int input = sc.nextInt();
-        sc.nextLine();
-        return input;
     }
 
     private static double getDoubleInput(String prompt) {
         System.out.print(prompt);
-        while (!sc.hasNextDouble()) {
-            System.out.println("Invalid input. Please enter a number.");
-            sc.next();
-            System.out.print(prompt);
+        while (true) {
+            try {
+                String input = sc.nextLine().trim();
+                if (input.isEmpty()) {
+                    System.out.print("Please enter a number: ");
+                    continue;
+                }
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a number: ");
+            }
         }
-        double input = sc.nextDouble();
-        sc.nextLine();
-        return input;
     }
 
     private static String getStringInput(String prompt) {
         System.out.print(prompt);
-        return sc.nextLine().trim();
+        String input = sc.nextLine().trim();
+        if (input.isEmpty()) {
+            System.out.println("Input cannot be empty. Using default value.");
+            return "N/A";
+        }
+        return input;
     }
 
     private static boolean getBooleanInput(String prompt) {
-        return getIntInput(prompt + " (1=Yes, 0=No): ") == 1;
+        while (true) {
+            try {
+                return getIntInput(prompt + " (1=Yes, 0=No): ") == 1;
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter 1 for Yes or 0 for No.");
+            }
+        }
     }
 
     // ==================== HANDLER METHODS ====================
-
     private static void handleLogin() {
+        System.out.println("\n--- Login ---");
         String username = getStringInput("Username: ");
         String password = getStringInput("Password: ");
         school.login(username, password);
         System.out.println(school.getLastMessage());
+        
+        Person user = school.getLoggedInUser();
+        if (user != null) {
+            System.out.println("\nWelcome " + user.getFullName() + "!");
+            System.out.println("Your role: " + user.getClass().getSimpleName());
+            
+            if (user instanceof Admin) {
+                System.out.println("You have full system access.");
+            } else if (user instanceof Teacher) {
+                System.out.println("You can view students and grade assignments.");
+            } else if (user instanceof Student) {
+                System.out.println("You can view courses and your grades.");
+            }
+        }
     }
 
     private static void handleLogout() {
@@ -403,9 +519,9 @@ public class Main {
         String id         = getStringInput("Course ID: ");
         String title      = getStringInput("Title: ");
         String code       = getStringInput("Code: ");
-        int credits       = getIntInput("Credits: ");
+        int credits       = getIntInput("Credits (1-6): ");
         String dept       = getStringInput("Department: ");
-        boolean available = getBooleanInput("Available?");
+        boolean available = getBooleanInput("Available for enrollment?");
         school.createCourse(id, title, code, credits, dept, available);
         System.out.println(school.getLastMessage());
     }
@@ -431,7 +547,7 @@ public class Main {
     private static void handleSetCourseAvailability() {
         System.out.println("\n--- Set Course Availability ---");
         String id         = getStringInput("Course ID: ");
-        boolean available = getBooleanInput("Available?");
+        boolean available = getBooleanInput("Available for enrollment?");
         school.setCourseAvailability(id, available);
         System.out.println(school.getLastMessage());
     }
@@ -448,6 +564,7 @@ public class Main {
 
     private static void handleGradeStudent() {
         System.out.println("\n--- Grade Student ---");
+        System.out.println("Note: You can only grade students who are enrolled in your courses.");
         String enrollId = getStringInput("Enrollment ID: ");
         double score    = getDoubleInput("Score (0-100): ");
         school.gradeStudent(enrollId, score);

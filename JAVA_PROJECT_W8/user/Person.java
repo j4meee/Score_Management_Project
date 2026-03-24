@@ -1,8 +1,7 @@
 package user;
 
-// PDF Section 3: Abstraction — defining what a system must do without specifying how.
-// PDF Section 4: Abstract Class — cannot be instantiated, serves as base class.
-// "new Person(...)" is now IMPOSSIBLE — Person is only a concept, not a real role.
+// PDF Section 3: Abstraction — defining what a system must do
+// PDF Section 4: Abstract Class — cannot be instantiated
 public abstract class Person implements IPerson {
 
     private String id;
@@ -19,18 +18,43 @@ public abstract class Person implements IPerson {
         this.active = true;
     }
 
-    @Override public String getId()       { return id; }
-    @Override public String getFullName() { return fullName; }
-    @Override public String getUsername() { return username; }
-    @Override public String getPassword() { return password; }
-    @Override public boolean isActive()   { return active; }
+    @Override 
+    public String getId() { 
+        return id; 
+    }
+    
+    @Override 
+    public String getFullName() { 
+        return fullName; 
+    }
+    
+    @Override 
+    public String getUsername() { 
+        return username; 
+    }
+    
+    @Override 
+    public String getPassword() { 
+        return password; 
+    }
+    
+    @Override 
+    public boolean isActive() { 
+        return active; 
+    }
 
     public void setId(String id) {
-        this.id = isBlank(id) ? "UNKNOWN" : id.trim();
+        if (isBlank(id)) {
+            throw new IllegalArgumentException("ID cannot be empty");
+        }
+        this.id = id.trim();
     }
 
     public void setFullName(String fullName) {
-        this.fullName = isBlank(fullName) ? "No Name" : fullName.trim();
+        if (isBlank(fullName)) {
+            throw new IllegalArgumentException("Full name cannot be empty");
+        }
+        this.fullName = fullName.trim();
     }
 
     public void setUsername(String username) {
@@ -43,8 +67,13 @@ public abstract class Person implements IPerson {
     }
 
     public void setPassword(String password) {
-        String pw = (password == null) ? "" : password;
-        this.password = (pw.length() <= 4) ? "0000" : pw;
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+        if (password.length() < 4) {
+            throw new IllegalArgumentException("Password must be at least 4 characters long");
+        }
+        this.password = password;
     }
 
     public void setActive(boolean active) {
@@ -60,9 +89,7 @@ public abstract class Person implements IPerson {
         return s == null || s.trim().isEmpty();
     }
 
-    // PDF Section 4-5: Abstract method — subclasses MUST implement this differently.
-    // Admin, Teacher, Student each decide their own permissions.
-    // This is abstraction: we define WHAT must happen, not HOW.
+    // PDF Section 4-5: Abstract method — subclasses MUST implement this differently
     @Override
     public abstract boolean can(String action);
 
