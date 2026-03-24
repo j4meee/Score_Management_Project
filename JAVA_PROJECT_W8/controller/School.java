@@ -410,8 +410,16 @@ public class School {
                 throw new InvalidScoreException(score);
             }
             
+            String normalizedInput = normalizeEnrollmentId(enrollmentId);
+            
             for (Enrollment enrollment : enrollments) {
-                if (enrollment.getEnrollmentId().equalsIgnoreCase(enrollmentId)) {
+                boolean matches = enrollmentId != null &&
+                                  enrollment.getEnrollmentId().equalsIgnoreCase(enrollmentId);
+                if (!matches && !normalizedInput.isEmpty()) {
+                    matches = normalizedInput.equals(
+                        normalizeEnrollmentId(enrollment.getEnrollmentId()));
+                }
+                if (matches) {
                     enrollment.setScore(score);
                     setLastMessage("Grade recorded successfully. Grade: " + 
                                    enrollment.getLetterGrade());
@@ -429,7 +437,7 @@ public class School {
     // View Teachers (Admin Only)
     public void printTeachers() {
         try {
-            checkPermission(VIEW_STUDENTS); // Teachers can also view students
+            checkPermission(VIEW_TEACHERS); // Teacher & admin access
             System.out.println("\n--- TEACHERS LIST ---");
             boolean found = false;
             for (Person user : users) {
@@ -664,6 +672,21 @@ public class School {
         }
         if (age < 18) {
             throw new IllegalArgumentException("Age must be at least 18: " + age);
+        }
+    }
+
+    private String normalizeEnrollmentId(String rawId) {
+        if (rawId == null) {
+            return "";
+        }
+        String digits = rawId.replaceAll("\\D", "");
+        if (digits.isEmpty()) {
+            return "";
+        }
+        try {
+            return String.valueOf(Integer.parseInt(digits));
+        } catch (NumberFormatException e) {
+            return digits;
         }
     }
 

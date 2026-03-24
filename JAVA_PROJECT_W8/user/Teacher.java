@@ -30,24 +30,18 @@ public class Teacher extends Person {
     @Override
     public boolean can(String action) {
         if (action == null) return false;
-        
-        // Teachers can view student information
-        if (action.equals(School.VIEW_STUDENTS)) return true;
-        
-        // Teachers can view all courses
-        if (action.equals(School.VIEW_COURSES)) return true;
-        
-        // Teachers can view all enrollments
-        if (action.equals(School.VIEW_ENROLLMENTS)) return true;
-        
-        // Teachers can view all grades
-        if (action.equals(School.VIEW_GRADES)) return true;
-        
-        // Teachers can grade students (MOST IMPORTANT)
-        if (action.equals(School.GRADE_STUDENT)) return true;
-        
-        // Teachers cannot create, delete, or modify users/courses
-        return false;
+
+        switch (action) {
+            case School.VIEW_STUDENTS:
+            case School.VIEW_TEACHERS:
+            case School.VIEW_COURSES:
+            case School.VIEW_ENROLLMENTS:
+            case School.VIEW_GRADES:
+            case School.GRADE_STUDENT:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
