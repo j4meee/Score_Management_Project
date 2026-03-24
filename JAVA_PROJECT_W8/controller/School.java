@@ -507,7 +507,7 @@ public class School {
             boolean found = false;
             for (Enrollment enrollment : enrollments) {
                 if (enrollment.getStudent().getId().equals(loggedInUser.getId())) {
-                    System.out.println(enrollment);
+                    System.out.println(formatEnrollmentSummary(enrollment, false));
                     found = true;
                 }
             }
@@ -688,6 +688,28 @@ public class School {
         } catch (NumberFormatException e) {
             return digits;
         }
+    }
+
+    private String formatEnrollmentSummary(Enrollment enrollment, boolean includeScore) {
+        if (enrollment == null || enrollment.getCourse() == null) {
+            return "Unknown enrollment";
+        }
+        StringBuilder summary = new StringBuilder();
+        summary.append(enrollment.getEnrollmentId())
+               .append(": ")
+               .append(enrollment.getCourse().getCode())
+               .append(" - ").append(enrollment.getCourse().getTitle())
+               .append(" (").append(enrollment.getSemester())
+               .append(" ").append(enrollment.getYear()).append(")");
+        if (includeScore) {
+            if (enrollment.isGraded()) {
+                summary.append(" Score: ").append(enrollment.getScore())
+                       .append(" (").append(enrollment.getLetterGrade()).append(")");
+            } else {
+                summary.append(" Score: N/A (not graded)");
+            }
+        }
+        return summary.toString();
     }
 
     private boolean isBlank(String s) {

@@ -18,7 +18,7 @@ public class Main {
         // PDF Section 10: Demonstrate exception handling at startup
         school.demonstrateExceptionHandling();
 
-        int choice = 0;
+        int choice = -1;  // Initialize to a non-zero value
 
         do {
             if (!school.isUserLoggedIn()) {
@@ -30,18 +30,36 @@ public class Main {
                     case 2: school.printCourses(); break;
                     case 3: demonstrateExceptionExamples(); break;
                     case 0: System.out.println("Goodbye!"); break;
-                    default: System.out.println("Invalid choice.");
+                    default: 
+                        if (choice != -1) {  // Don't show error for initial state
+                            System.out.println("Invalid choice. Please enter 0-3.");
+                        }
                 }
             } else {
                 showMainLoggedInMenu();
                 choice = getIntInput("Choose: ");
 
                 switch (choice) {
-                    case 1: showManagementMenu(); break;
-                    case 2: showViewMenu();       break;
+                    case 1: 
+                        if (hasAnyManagementPermission(school.getLoggedInUser())) {
+                            showManagementMenu();
+                        } else {
+                            System.out.println("You don't have permission for Management Menu.");
+                            waitForEnter();
+                        }
+                        break;
+                    case 2: 
+                        if (hasAnyViewPermission(school.getLoggedInUser())) {
+                            showViewMenu();
+                        } else {
+                            System.out.println("You don't have permission for View Menu.");
+                            waitForEnter();
+                        }
+                        break;
                     case 3: handleLogout();       break;
                     case 0: System.out.println("Goodbye!"); break;
-                    default: System.out.println("Invalid choice.");
+                    default: 
+                        System.out.println("Invalid choice. Please enter 0-3.");
                 }
             }
         } while (choice != 0);
@@ -52,48 +70,64 @@ public class Main {
     // PDF Section 10: Exception examples with try-catch-finally
     private static void demonstrateExceptionExamples() {
         System.out.println("\n=== EXCEPTION HANDLING EXAMPLES ===");
+        System.out.println("(Press Enter to skip each example)");
         
         // Example 1: NumberFormatException
         System.out.println("\n1. NumberFormatException Demo:");
-        System.out.print("   Enter a number (or 'abc' to see exception): ");
+        System.out.print("   Enter a number (or 'abc' to see exception, Enter to skip): ");
         String input = sc.nextLine();
-        try {
-            int number = Integer.parseInt(input);
-            System.out.println("   You entered: " + number);
-        } catch (NumberFormatException e) {
-            System.out.println("   Error: '" + input + "' is not a valid number!");
-            System.out.println("   Exception message: " + e.getMessage());
+        if (!input.isEmpty()) {
+            try {
+                int number = Integer.parseInt(input);
+                System.out.println("   ✓ You entered: " + number);
+            } catch (NumberFormatException e) {
+                System.out.println("   ✗ Error: '" + input + "' is not a valid number!");
+                System.out.println("   Exception message: " + e.getMessage());
+            }
+        } else {
+            System.out.println("   Skipped.");
         }
         
         // Example 2: Multiple catch blocks
         System.out.println("\n2. Multiple Catch Blocks Demo:");
-        System.out.print("   Enter an array index (0-4): ");
-        try {
-            int index = Integer.parseInt(sc.nextLine());
-            int[] array = {10, 20, 30, 40, 50};
-            System.out.println("   Value at index " + index + ": " + array[index]);
-        } catch (NumberFormatException e) {
-            System.out.println("   Error: That's not a valid number!");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("   Error: Index out of range! Valid indices: 0-4");
-        } catch (Exception e) {
-            System.out.println("   Unexpected error: " + e.getMessage());
+        System.out.print("   Enter an array index (0-4) or Enter to skip: ");
+        input = sc.nextLine();
+        if (!input.isEmpty()) {
+            try {
+                int index = Integer.parseInt(input);
+                int[] array = {10, 20, 30, 40, 50};
+                System.out.println("   Value at index " + index + ": " + array[index]);
+            } catch (NumberFormatException e) {
+                System.out.println("   ✗ Error: That's not a valid number!");
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("   ✗ Error: Index out of range! Valid indices: 0-4");
+            } catch (Exception e) {
+                System.out.println("   ✗ Unexpected error: " + e.getMessage());
+            }
+        } else {
+            System.out.println("   Skipped.");
         }
         
         // Example 3: throw and throws demo
         System.out.println("\n3. Custom Validation Demo:");
-        System.out.print("   Enter a score (0-100): ");
-        try {
-            double score = Double.parseDouble(sc.nextLine());
-            validateScore(score);
-            System.out.println("   Valid score: " + score);
-        } catch (NumberFormatException e) {
-            System.out.println("   Error: Please enter a valid number!");
-        } catch (IllegalArgumentException e) {
-            System.out.println("   Error: " + e.getMessage());
+        System.out.print("   Enter a score (0-100) or Enter to skip: ");
+        input = sc.nextLine();
+        if (!input.isEmpty()) {
+            try {
+                double score = Double.parseDouble(input);
+                validateScore(score);
+                System.out.println("   ✓ Valid score: " + score);
+            } catch (NumberFormatException e) {
+                System.out.println("   ✗ Error: Please enter a valid number!");
+            } catch (IllegalArgumentException e) {
+                System.out.println("   ✗ Error: " + e.getMessage());
+            }
+        } else {
+            System.out.println("   Skipped.");
         }
         
         System.out.println("\n=== END EXCEPTION EXAMPLES ===");
+        waitForEnter();
     }
     
     private static void validateScore(double score) {
@@ -121,7 +155,10 @@ public class Main {
 
     private static void showMainLoggedInMenu() {
         Person user = school.getLoggedInUser();
-        if (user == null) { System.out.println("Error: Not logged in."); return; }
+        if (user == null) { 
+            System.out.println("Error: Not logged in."); 
+            return; 
+        }
 
         System.out.println("\n+----------------------------------------+");
         System.out.println("|         CADT UNIVERSITY SYSTEM         |");
@@ -132,12 +169,10 @@ public class Main {
         System.out.println("|              MAIN MENU                 |");
         System.out.println("+----------------------------------------+");
         
-        // Show management menu only if user has ANY management permission
         if (hasAnyManagementPermission(user)) {
             System.out.println("| 1) Management Menu (Create/Edit/Delete)     |");
         }
         
-        // Show view menu only if user has ANY view permission
         if (hasAnyViewPermission(user)) {
             System.out.println("| 2) View Menu (View Information)             |");
         }
@@ -174,7 +209,10 @@ public class Main {
     // ==================== MANAGEMENT MENU ====================
     private static void showManagementMenu() {
         Person user = school.getLoggedInUser();
-        if (user == null) { System.out.println("You are not logged in."); return; }
+        if (user == null) { 
+            System.out.println("You are not logged in."); 
+            return; 
+        }
 
         int choice;
 
@@ -214,6 +252,7 @@ public class Main {
 
             if (choice >= 1 && choice <= allowedActions.size()) {
                 handleManagementAction(allowedActions.get(choice - 1));
+                waitForEnter();  // Wait for user to see the result
             } else if (choice != 0) {
                 System.out.println("Invalid choice.");
             }
@@ -245,7 +284,10 @@ public class Main {
     // ==================== VIEW MENU ====================
     private static void showViewMenu() {
         Person user = school.getLoggedInUser();
-        if (user == null) { System.out.println("You are not logged in."); return; }
+        if (user == null) { 
+            System.out.println("You are not logged in."); 
+            return; 
+        }
 
         int choice;
 
@@ -282,6 +324,7 @@ public class Main {
 
             if (choice >= 1 && choice <= allowedActions.size()) {
                 handleViewAction(allowedActions.get(choice - 1));
+                waitForEnter();  // Wait for user to see the result
             } else if (choice != 0) {
                 System.out.println("Invalid choice.");
             }
@@ -371,12 +414,11 @@ public class Main {
         staffs.add(new Teacher("T02", "Teacher User", "teacherDemo", "pass1234", "Science"));
         staffs.add(new Student("S03", "Student User", "studentDemo", "pass1234", "CS", null));
 
-        // FIXED: Using ONLY constants that exist in School class
         String[] actions = {
             School.CREATE_TEACHER,
             School.GRADE_STUDENT,
             School.VIEW_OWN_GRADES,
-            School.VIEW_STUDENTS      // This exists in School class
+            School.VIEW_STUDENTS
         };
 
         for (Person s : staffs) {
@@ -395,21 +437,29 @@ public class Main {
         school.demonstrateAnonymousInnerClass();
         school.demonstrateLambdaExpression();
         school.logout();
+        
+        waitForEnter();
     }
 
-    // ==================== INPUT HANDLING ====================
+    // ==================== FIXED INPUT HANDLING ====================
+    /**
+     * FIXED: Properly handles integer input without multiple prompts
+     */
     private static int getIntInput(String prompt) {
         System.out.print(prompt);
         while (true) {
             try {
                 String input = sc.nextLine().trim();
+                
                 if (input.isEmpty()) {
                     System.out.print("Please enter a number: ");
                     continue;
                 }
+                
                 return Integer.parseInt(input);
+                
             } catch (NumberFormatException e) {
-                System.out.print("Invalid input. Please enter a number: ");
+                System.out.print("Invalid input. Please enter a valid number: ");
             }
         }
     }
@@ -425,36 +475,82 @@ public class Main {
                 }
                 return Double.parseDouble(input);
             } catch (NumberFormatException e) {
-                System.out.print("Invalid input. Please enter a number: ");
+                System.out.print("Invalid input. Please enter a valid number: ");
             }
         }
     }
 
-    private static String getStringInput(String prompt) {
+    /**
+     * FIXED: Properly handles string input without automatically using default
+     * Returns null if input is empty to allow caller to handle it
+     */
+    private static String getStringInput(String prompt, boolean allowEmpty) {
         System.out.print(prompt);
         String input = sc.nextLine().trim();
-        if (input.isEmpty()) {
-            System.out.println("Input cannot be empty. Using default value.");
-            return "N/A";
+        if (input.isEmpty() && !allowEmpty) {
+            System.out.println("Input cannot be empty. Please try again.");
+            return getStringInput(prompt, allowEmpty);  // Recursive retry
         }
-        return input;
+        return input.isEmpty() ? null : input;
+    }
+    
+    /**
+     * Convenience method - doesn't allow empty input
+     */
+    private static String getRequiredStringInput(String prompt) {
+        return getStringInput(prompt, false);
+    }
+    
+    /**
+     * Convenience method - allows empty input (returns null if empty)
+     */
+    private static String getOptionalStringInput(String prompt) {
+        return getStringInput(prompt, true);
     }
 
     private static boolean getBooleanInput(String prompt) {
         while (true) {
             try {
-                return getIntInput(prompt + " (1=Yes, 0=No): ") == 1;
+                int choice = getIntInput(prompt + " (1=Yes, 0=No): ");
+                if (choice == 1) return true;
+                if (choice == 0) return false;
+                System.out.println("Please enter 1 for Yes or 0 for No.");
             } catch (Exception e) {
-                System.out.println("Invalid input. Please enter 1 for Yes or 0 for No.");
+                System.out.println("Invalid input. Please enter 1 or 0.");
             }
         }
     }
+    
+    /**
+     * Helper method to wait for user to press Enter
+     */
+    private static void waitForEnter() {
+        System.out.print("\nPress Enter to continue...");
+        sc.nextLine();
+    }
 
-    // ==================== HANDLER METHODS ====================
+    // ==================== FIXED HANDLER METHODS ====================
     private static void handleLogin() {
         System.out.println("\n--- Login ---");
-        String username = getStringInput("Username: ");
-        String password = getStringInput("Password: ");
+        
+        // Get username - cannot be empty
+        String username = null;
+        while (username == null || username.isEmpty()) {
+            username = getStringInput("Username: ", false);
+            if (username == null || username.isEmpty()) {
+                System.out.println("Username cannot be empty. Please try again.");
+            }
+        }
+        
+        // Get password - cannot be empty
+        String password = null;
+        while (password == null || password.isEmpty()) {
+            password = getStringInput("Password: ", false);
+            if (password == null || password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+            }
+        }
+        
         school.login(username, password);
         System.out.println(school.getLastMessage());
         
@@ -470,57 +566,66 @@ public class Main {
             } else if (user instanceof Student) {
                 System.out.println("You can view courses and your grades.");
             }
+            waitForEnter();
+        } else {
+            // Login failed, give user chance to try again or go back
+            System.out.println("\nPress Enter to return to main menu...");
+            sc.nextLine();
         }
     }
 
     private static void handleLogout() {
         school.logout();
         System.out.println(school.getLastMessage());
+        waitForEnter();
     }
 
     private static void handleCreateTeacher() {
         System.out.println("\n--- Create New Teacher ---");
-        String id       = getStringInput("Teacher ID: ");
-        String name     = getStringInput("Full Name: ");
-        String username = getStringInput("Username: ");
-        String password = getStringInput("Password: ");
-        String dept     = getStringInput("Department: ");
+        String id       = getRequiredStringInput("Teacher ID: ");
+        String name     = getRequiredStringInput("Full Name: ");
+        String username = getRequiredStringInput("Username: ");
+        String password = getRequiredStringInput("Password: ");
+        String dept     = getOptionalStringInput("Department (press Enter for 'Unknown'): ");
+        if (dept == null) dept = "Unknown";
         school.createTeacher(id, name, username, password, dept);
         System.out.println(school.getLastMessage());
     }
 
     private static void handleDeleteTeacher() {
         System.out.println("\n--- Delete Teacher ---");
-        String id = getStringInput("Teacher ID to delete: ");
+        String id = getRequiredStringInput("Teacher ID to delete: ");
         school.deleteTeacher(id);
         System.out.println(school.getLastMessage());
     }
 
     private static void handleCreateStudent() {
         System.out.println("\n--- Create New Student ---");
-        String id       = getStringInput("Student ID: ");
-        String name     = getStringInput("Full Name: ");
-        String username = getStringInput("Username: ");
-        String password = getStringInput("Password: ");
-        String major    = getStringInput("Major: ");
+        String id       = getRequiredStringInput("Student ID: ");
+        String name     = getRequiredStringInput("Full Name: ");
+        String username = getRequiredStringInput("Username: ");
+        String password = getRequiredStringInput("Password: ");
+        String major    = getOptionalStringInput("Major (press Enter for 'Undeclared'): ");
+        if (major == null) major = "Undeclared";
         school.createStudent(id, name, username, password, major);
         System.out.println(school.getLastMessage());
     }
 
     private static void handleDeleteStudent() {
         System.out.println("\n--- Delete Student ---");
-        String id = getStringInput("Student ID to delete: ");
+        String id = getRequiredStringInput("Student ID to delete: ");
         school.deleteStudent(id);
         System.out.println(school.getLastMessage());
     }
 
     private static void handleCreateCourse() {
         System.out.println("\n--- Create New Course ---");
-        String id         = getStringInput("Course ID: ");
-        String title      = getStringInput("Title: ");
-        String code       = getStringInput("Code: ");
+        String id         = getRequiredStringInput("Course ID: ");
+        String title      = getRequiredStringInput("Title: ");
+        String code       = getRequiredStringInput("Code: ");
         int credits       = getIntInput("Credits (1-6): ");
-        String dept       = getStringInput("Department: ");
+        String dept       = getOptionalStringInput("Department (press Enter for 'General'): ");
+        if (dept == null) dept = "General";
         boolean available = getBooleanInput("Available for enrollment?");
         school.createCourse(id, title, code, credits, dept, available);
         System.out.println(school.getLastMessage());
@@ -528,25 +633,27 @@ public class Main {
 
     private static void handleUpdateCourse() {
         System.out.println("\n--- Update Course ---");
-        String id      = getStringInput("Course ID: ");
-        String title   = getStringInput("New Title (press Enter to skip): ");
-        String code    = getStringInput("New Code (press Enter to skip): ");
+        String id      = getRequiredStringInput("Course ID: ");
+        String title   = getOptionalStringInput("New Title (press Enter to skip): ");
+        String code    = getOptionalStringInput("New Code (press Enter to skip): ");
         int credits    = getIntInput("New Credits (0 to skip): ");
-        String dept    = getStringInput("New Department (press Enter to skip): ");
-        school.updateCourse(id, title, code, credits, dept);
+        String dept    = getOptionalStringInput("New Department (press Enter to skip): ");
+        school.updateCourse(id, title != null ? title : "", 
+                           code != null ? code : "", credits, 
+                           dept != null ? dept : "");
         System.out.println(school.getLastMessage());
     }
 
     private static void handleDeleteCourse() {
         System.out.println("\n--- Delete Course ---");
-        String id = getStringInput("Course ID to delete: ");
+        String id = getRequiredStringInput("Course ID to delete: ");
         school.deleteCourse(id);
         System.out.println(school.getLastMessage());
     }
 
     private static void handleSetCourseAvailability() {
         System.out.println("\n--- Set Course Availability ---");
-        String id         = getStringInput("Course ID: ");
+        String id         = getRequiredStringInput("Course ID: ");
         boolean available = getBooleanInput("Available for enrollment?");
         school.setCourseAvailability(id, available);
         System.out.println(school.getLastMessage());
@@ -554,9 +661,10 @@ public class Main {
 
     private static void handleCreateEnrollment() {
         System.out.println("\n--- Create New Enrollment ---");
-        String studentId = getStringInput("Student ID: ");
-        String courseId  = getStringInput("Course ID: ");
-        String semester  = getStringInput("Semester (Fall/Spring/Summer): ");
+        String studentId = getRequiredStringInput("Student ID: ");
+        String courseId  = getRequiredStringInput("Course ID: ");
+        String semester  = getOptionalStringInput("Semester (Fall/Spring/Summer, Enter for 'Fall'): ");
+        if (semester == null) semester = "Fall";
         int year         = getIntInput("Year: ");
         school.createEnrollment(studentId, courseId, semester, year);
         System.out.println(school.getLastMessage());
@@ -565,7 +673,7 @@ public class Main {
     private static void handleGradeStudent() {
         System.out.println("\n--- Grade Student ---");
         System.out.println("Note: You can only grade students who are enrolled in your courses.");
-        String enrollId = getStringInput("Enrollment ID: ");
+        String enrollId = getRequiredStringInput("Enrollment ID: ");
         double score    = getDoubleInput("Score (0-100): ");
         school.gradeStudent(enrollId, score);
         System.out.println(school.getLastMessage());
