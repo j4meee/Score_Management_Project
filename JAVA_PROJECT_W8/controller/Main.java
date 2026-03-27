@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -399,9 +400,9 @@ public class Main {
         school.logout();
 
         System.out.println("Sample data created.");
-        System.out.println("Default Admin: admin / 1234");
-        System.out.println("Teacher: smith / pass123");
-        System.out.println("Student: john / student123\n");
+        System.out.println("Default Admin account seeded (username: admin).");
+        System.out.println("Teacher account seeded (username: smith).");
+        System.out.println("Student account seeded (username: john).\n");
 
         // ==================== POLYMORPHISM DEMO ====================
         System.out.println("========================================");
@@ -520,6 +521,18 @@ public class Main {
             }
         }
     }
+
+    private static String getPasswordInput(String prompt) {
+        Console console = System.console();
+        if (console != null) {
+            char[] passwordChars = console.readPassword(prompt);
+            if (passwordChars == null) {
+                return null;
+            }
+            return new String(passwordChars);
+        }
+        return getStringInput(prompt, false);
+    }
     
     /**
      * Helper method to wait for user to press Enter
@@ -545,7 +558,7 @@ public class Main {
         // Get password - cannot be empty
         String password = null;
         while (password == null || password.isEmpty()) {
-            password = getStringInput("Password: ", false);
+            password = getPasswordInput("Password: ");
             if (password == null || password.isEmpty()) {
                 System.out.println("Password cannot be empty. Please try again.");
             }

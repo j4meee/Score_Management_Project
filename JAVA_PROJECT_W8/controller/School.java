@@ -57,7 +57,7 @@ public class School {
         this.enrollments = new ArrayList<>();
         this.loggedInUser = null;
         seedDefaultAdmin();
-        this.lastMessage = "School created. Default admin: admin / 1234";
+        this.lastMessage = "School created with a default admin account.";
     }
 
     // ==================== GETTERS / SETTERS ====================
