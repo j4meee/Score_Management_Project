@@ -544,6 +544,44 @@ public class Main {
     }
     
     /**
+     * Gets password with confirmation (invisible input)
+     * @param prompt The prompt to show for password
+     * @param confirmPrompt The prompt to show for confirmation
+     * @return The confirmed password, or null if confirmation failed
+     */
+    private static String getPasswordWithConfirmation(String prompt, String confirmPrompt) {
+        String password = null;
+        String confirmPassword = null;
+        
+        while (true) {
+            // Get first password
+            while (password == null || password.isEmpty()) {
+                password = getMaskedPassword(prompt);
+                if (password == null || password.isEmpty()) {
+                    System.out.println("Password cannot be empty. Please try again.");
+                }
+            }
+            
+            // Get confirmation password
+            while (confirmPassword == null || confirmPassword.isEmpty()) {
+                confirmPassword = getMaskedPassword(confirmPrompt);
+                if (confirmPassword == null || confirmPassword.isEmpty()) {
+                    System.out.println("Confirmation password cannot be empty. Please try again.");
+                }
+            }
+            
+            // Check if passwords match
+            if (password.equals(confirmPassword)) {
+                return password;
+            } else {
+                System.out.println("Error: Passwords do not match. Please try again.");
+                password = null;
+                confirmPassword = null;
+            }
+        }
+    }
+    
+    /**
      * Helper method to wait for user to press Enter
      */
     private static void waitForEnter() {
@@ -641,14 +679,8 @@ public class Main {
         
         String username = getRequiredStringInput("Username: ");
         
-        // Get password with masking
-        String password = null;
-        while (password == null || password.isEmpty()) {
-            password = getMaskedPassword("Password: ");
-            if (password == null || password.isEmpty()) {
-                System.out.println("Password cannot be empty. Please try again.");
-            }
-        }
+        // Get password with confirmation
+        String password = getPasswordWithConfirmation("Password: ", "Confirm Password: ");
         
         String dept = getOptionalStringInput("Department (press Enter for 'Unknown'): ");
         if (dept == null) dept = "Unknown";
@@ -673,14 +705,8 @@ public class Main {
         
         String username = getRequiredStringInput("Username: ");
         
-        // Get password with masking
-        String password = null;
-        while (password == null || password.isEmpty()) {
-            password = getMaskedPassword("Password: ");
-            if (password == null || password.isEmpty()) {
-                System.out.println("Password cannot be empty. Please try again.");
-            }
-        }
+        // Get password with confirmation
+        String password = getPasswordWithConfirmation("Password: ", "Confirm Password: ");
         
         String major = getOptionalStringInput("Major (press Enter for 'Undeclared'): ");
         if (major == null) major = "Undeclared";
