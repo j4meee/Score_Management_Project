@@ -12,6 +12,7 @@ import user.Teacher;
 public class Main {
     private static Scanner sc = new Scanner(System.in);
     private static School school = new School("CADT University", "Phnom Penh");
+    private static Console console = System.console();
 
     public static void main(String[] args) {
         setupSampleData();
@@ -522,16 +523,24 @@ public class Main {
         }
     }
 
-    private static String getPasswordInput(String prompt) {
-        Console console = System.console();
+    /**
+     * Gets password input with masking (invisible characters)
+     * Falls back to regular input if Console is not available (e.g., in IDEs)
+     */
+    private static String getMaskedPassword(String prompt) {
+        System.out.print(prompt);
+        
         if (console != null) {
-            char[] passwordChars = console.readPassword(prompt);
+            char[] passwordChars = console.readPassword();
             if (passwordChars == null) {
                 return null;
             }
             return new String(passwordChars);
+        } else {
+            // Fallback for IDEs where Console is not available
+            System.out.println("(Password will be visible - Console not available)");
+            return sc.nextLine();
         }
-        return getStringInput(prompt, false);
     }
     
     /**
@@ -540,6 +549,36 @@ public class Main {
     private static void waitForEnter() {
         System.out.print("\nPress Enter to continue...");
         sc.nextLine();
+    }
+
+    // ==================== NAME VALIDATION ====================
+    /**
+     * Validates that a name contains only letters, spaces, hyphens, apostrophes, and periods
+     */
+    private static boolean isValidName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        // Pattern: letters (any language), spaces, hyphens, apostrophes, periods
+        return name.trim().matches("^[\\p{L}\\s\\-'.]+$");
+    }
+    
+    /**
+     * Gets and validates a full name with retry loop
+     */
+    private static String getValidatedFullName(String prompt) {
+        while (true) {
+            String name = getStringInput(prompt, false);
+            if (name != null && !name.trim().isEmpty()) {
+                if (isValidName(name.trim())) {
+                    return name.trim();
+                } else {
+                    System.out.println("Error: Full name can only contain letters, spaces, hyphens, apostrophes, and periods.");
+                    System.out.println("Invalid name: '" + name.trim() + "'");
+                    System.out.println("Please try again.");
+                }
+            }
+        }
     }
 
     // ==================== FIXED HANDLER METHODS ====================
@@ -555,10 +594,10 @@ public class Main {
             }
         }
         
-        // Get password - cannot be empty
+        // Get password with masking
         String password = null;
         while (password == null || password.isEmpty()) {
-            password = getPasswordInput("Password: ");
+            password = getMaskedPassword("Password: ");
             if (password == null || password.isEmpty()) {
                 System.out.println("Password cannot be empty. Please try again.");
             }
@@ -595,12 +634,25 @@ public class Main {
 
     private static void handleCreateTeacher() {
         System.out.println("\n--- Create New Teacher ---");
-        String id       = getRequiredStringInput("Teacher ID: ");
-        String name     = getRequiredStringInput("Full Name: ");
+        String id = getRequiredStringInput("Teacher ID: ");
+        
+        // Validate full name with immediate feedback
+        String name = getValidatedFullName("Full Name: ");
+        
         String username = getRequiredStringInput("Username: ");
-        String password = getRequiredStringInput("Password: ");
-        String dept     = getOptionalStringInput("Department (press Enter for 'Unknown'): ");
+        
+        // Get password with masking
+        String password = null;
+        while (password == null || password.isEmpty()) {
+            password = getMaskedPassword("Password: ");
+            if (password == null || password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+            }
+        }
+        
+        String dept = getOptionalStringInput("Department (press Enter for 'Unknown'): ");
         if (dept == null) dept = "Unknown";
+        
         school.createTeacher(id, name, username, password, dept);
         System.out.println(school.getLastMessage());
     }
@@ -614,12 +666,25 @@ public class Main {
 
     private static void handleCreateStudent() {
         System.out.println("\n--- Create New Student ---");
-        String id       = getRequiredStringInput("Student ID: ");
-        String name     = getRequiredStringInput("Full Name: ");
+        String id = getRequiredStringInput("Student ID: ");
+        
+        // Validate full name with immediate feedback
+        String name = getValidatedFullName("Full Name: ");
+        
         String username = getRequiredStringInput("Username: ");
-        String password = getRequiredStringInput("Password: ");
-        String major    = getOptionalStringInput("Major (press Enter for 'Undeclared'): ");
+        
+        // Get password with masking
+        String password = null;
+        while (password == null || password.isEmpty()) {
+            password = getMaskedPassword("Password: ");
+            if (password == null || password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+            }
+        }
+        
+        String major = getOptionalStringInput("Major (press Enter for 'Undeclared'): ");
         if (major == null) major = "Undeclared";
+        
         school.createStudent(id, name, username, password, major);
         System.out.println(school.getLastMessage());
     }
