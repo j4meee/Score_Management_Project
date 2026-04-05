@@ -18,7 +18,7 @@ public class Main {
         setupSampleData();
         
         // PDF Section 10: Demonstrate exception handling at startup
-        school.demonstrateExceptionHandling();
+        // school.demonstrateExceptionHandling();
 
         int choice = -1;  // Initialize to a non-zero value
 
@@ -385,8 +385,8 @@ public class Main {
     }
 
     // ==================== SAMPLE DATA ====================
+    // ==================== SAMPLE DATA ====================
     private static void setupSampleData() {
-        System.out.println("Setting up sample data...");
         school.login("admin", "1234");
         school.createTeacher("T001", "Dr. Smith", "smith", "pass123", "Mathematics");
         school.createTeacher("T002", "Prof. Johnson", "johnson", "pass123", "Computer Science");
@@ -399,13 +399,10 @@ public class Main {
         school.createEnrollment("S001", "C002", "Fall", 2024);
         school.createEnrollment("S002", "C001", "Fall", 2024);
         school.logout();
+    }
 
-        System.out.println("Sample data created.");
-        System.out.println("Default Admin account seeded (username: admin).");
-        System.out.println("Teacher account seeded (username: smith).");
-        System.out.println("Student account seeded (username: john).\n");
-
-        // ==================== POLYMORPHISM DEMO ====================
+        // ==================== POLYMORPHISM DEMO (COMMENTED OUT) ====================
+        /*
         System.out.println("========================================");
         System.out.println("   POLYMORPHISM DEMO (PDF Section 1-5)");
         System.out.println("   Same can() call, different results");
@@ -433,15 +430,17 @@ public class Main {
         System.out.println("\n=> Java chose the right can() at runtime.");
         System.out.println("=> No instanceof check — each role decided its own permissions.");
         System.out.println("========================================\n");
+        */
 
-        // ==================== LAMBDA DEMO ====================
+        // ==================== LAMBDA DEMO (COMMENTED OUT) ====================
+        /*
         school.login("admin", "1234");
         school.demonstrateAnonymousInnerClass();
         school.demonstrateLambdaExpression();
         school.logout();
+        */
         
-        waitForEnter();
-    }
+        // waitForEnter();  // Commented out to remove the pause
 
     // ==================== FIXED INPUT HANDLING ====================
     /**
